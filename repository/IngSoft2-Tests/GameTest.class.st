@@ -5,18 +5,6 @@ Class {
 }
 
 { #category : #tests }
-GameTest >> test2PlayersPlay [
-| die playerOne playerTwo players |
-die := Die of: 6 rolling: #(6).
-playerOne:=Player start.
-playerTwo:=Player start.
-players:=playerOne + playerTwo.
-players play:die.
-self assert: (playerOne getPos ~= 0 ).
-self assert: (playerTwo getPos ~= 0 )
-]
-
-{ #category : #tests }
 GameTest >> test2PlayersPlay1ReachesEnd [
 | die playerOne playerTwo players endPos|
 endPos:=5.
@@ -54,7 +42,7 @@ players:=playerOne + playerTwo.
 game:=Game withDie:die withEndPos:endPos withPlayers:players.
 game play.
 finalPositions:=game getFinalPositions.
-self assert: finalPositions equals:#(12 2).
+self assert: finalPositions equals:#(12 1).
 
 ]
 
