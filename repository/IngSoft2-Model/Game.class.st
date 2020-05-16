@@ -3,41 +3,49 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'die',
-		'endPos',
+		'endPosition',
+		'table',
 		'players'
 	],
 	#category : #'IngSoft2-Model'
 }
 
-{ #category : #creation }
-Game class >> withDie: aDie withEndPos: anEndPos withPlayers: aSetOfPlayers [ 
-	^self new initializeWithDie:aDie withEndPos:anEndPos withPlayers: aSetOfPlayers.
+{ #category : #asserting }
+Game class >> assertEndPositionIsPositive: anInteger [ 
+	^anInteger>0
+]
+
+{ #category : #'instance creation' }
+Game class >> playedBy: players rolling: aDie until: endPosition [
+	(self assertEndPositionIsPositive:endPosition) ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition.] ifFalse:[Error signal:'End position cannot be negative']
+]
+
+{ #category : #accessing }
+Game >> finalPositions [
+	^table finalPositions.
 ]
 
 { #category : #boolean }
-Game >> checkIfEnded [
-	^(players checkPositions:endPos )
-]
-
-{ #category : #getter }
-Game >> getFinalPositions [
-	(self checkIfEnded) ifTrue:[^players getPositions] ifFalse:[^'Game did not end'].
+Game >> hasEnded [
+	^table arePositionsGreaterThan:endPosition.
 ]
 
 { #category : #initialization }
-Game >> initializeWithDie: aDie withEndPos: anEndPos withPlayers: aSetOfPlayers [ 
+Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition [
+	players:=CircularIterator cyclingOver:aSetOfPlayers.
 	die:=aDie.
-	endPos:=anEndPos.
-	players:=aSetOfPlayers.
+	endPosition:=anEndPosition.
+	table:= Table withPlayers:aSetOfPlayers.
+	
 ]
 
 { #category : #playing }
 Game >> play [
-	[self checkIfEnded] whileFalse:[players play:die].
-	^self winner
+	[self hasEnded] whileFalse:[table useRoll:die roll toChangeStateOf:players current.
+	players next]
 ]
 
-{ #category : #getter }
+{ #category : #accessing }
 Game >> winner [
-	^players getWinner:endPos.
+	^table whoIsWinner:endPosition.
 ]
