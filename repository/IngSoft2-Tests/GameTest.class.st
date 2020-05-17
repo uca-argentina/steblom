@@ -9,7 +9,7 @@ GameTest >> testGameCanEnd [
 	|game players die|
 	die := Die of:6 rolling:#(4 4 6).
 	players := #('Pedro' 'Juan' 'Jorge').
-	game := Game playedBy:players rolling:die until:45.
+	game := Game playedBy:players rolling:die until:40 and:2.
 	game play.
 	self assert: game hasEnded.
 ]
