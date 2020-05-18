@@ -6,7 +6,8 @@ Class {
 		'endPosition',
 		'table',
 		'players',
-		'finalLap'
+		'finalLap',
+		'board'
 	],
 	#category : #'IngSoft2-Model'
 }
@@ -24,6 +25,11 @@ Game class >> playedBy: players rolling: aDie until: endPosition [
 { #category : #'instance creation' }
 Game class >> playedBy: players rolling: aDie until: endPosition and:finalLap [
 	(self assertEndPositionIsPositive:endPosition) ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition 	and:finalLap.] ifFalse:[Error signal:'End position cannot be negative']
+]
+
+{ #category : #'instance creation' }
+Game class >> playedBy: players rolling: aDie until: endPosition and:finalLap on:aBoard [
+	(self assertEndPositionIsPositive:endPosition) ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition and:finalLap on:aBoard] ifFalse:[Error signal:'End position cannot be negative']
 ]
 
 { #category : #accessing }
@@ -52,16 +58,30 @@ Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition and
 	endPosition:=anEndPosition.
 	finalLap:=afinalLap.
 	table:= Table withPlayers:aSetOfPlayers.
+	board:= board Random.
+	
+	
+]
+
+{ #category : #initialization }
+Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition and: afinalLap on:aBoard [
+	players:=CircularIterator cyclingOver:aSetOfPlayers.
+	die:=aDie.
+	endPosition:=anEndPosition.
+	finalLap:=afinalLap.
+	table:= Table withPlayers:aSetOfPlayers.
+	board:= aBoard.
+	
 	
 ]
 
 { #category : #playing }
 Game >> play [
-	[self hasEnded] whileFalse:[table useRoll:die roll toChangeStateOf:players current with:endPosition.
+	[self hasEnded] whileFalse:[table useRoll:die roll toChangeStateOf:players current with:endPosition using:board.
 	players next]
 ]
 
 { #category : #accessing }
 Game >> winner [
-	^table whoIsWinner:endPosition.
+	^table whoIsWinner:finalLap.
 ]
