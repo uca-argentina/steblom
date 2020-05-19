@@ -55,6 +55,18 @@ GameTest >> testGameCanEnd [
 ]
 
 { #category : #tests }
+GameTest >> testPlayersPositions [
+	|game players die board endPosition|
+	die := Die of:6 rolling:#(4 6 1).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition:=10.
+	board:=Board with:NoEffect new andSize:endPosition.
+	game := Game playedBy:players rolling:die until:endPosition andLap:2 on:board.
+	game play.
+	self assert: game playerPositions equals:(OrderedCollection with:'Juan' with:'Pedro' with:'Jorge').
+]
+
+{ #category : #tests }
 GameTest >> testWinnerDoesNotExistIfGameHasNotEnded [
 	|game players die board endPosition|
 	die := Die of:6 rolling:#(4 4 6).

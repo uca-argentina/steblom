@@ -70,6 +70,17 @@ Table >> movePlayer: player to: temporaryPosition [
 		ifFound: [ :row | row at: 2 put: temporaryPosition ]
 ]
 
+{ #category : #'as yet unclassified' }
+Table >> playerPositions [
+   | positions sortedPlayers|
+   positions:= SortedCollection new.
+	positions sort: [ :a :b | (a at:1) > (b at:1) ].
+   rows do: [ :row | positions add: (OrderedCollection with:((row at:2)+(row at:3)) with:(row at:1))].
+   sortedPlayers:=positions collect:[:position |position at:2].
+	^sortedPlayers.
+	
+]
+
 { #category : #accessing }
 Table >> substractLap: player [
 	rows

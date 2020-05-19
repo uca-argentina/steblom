@@ -12,8 +12,8 @@ CircularIteratorTest >> testCantCreateWithEmptyCollection [
 
 	self
 		should: [ CircularIterator cyclingOver: #() ]
-		raise: InstanceCreationFailed
-		withMessageText: 'It makes no sense to iterate in a cyclic way an empty collection'
+		raise: Error
+		description: 'It makes no sense to iterate in a cyclic way an empty collection'
 ]
 
 { #category : #tests }

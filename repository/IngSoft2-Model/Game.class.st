@@ -68,8 +68,13 @@ Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition and
 
 { #category : #playing }
 Game >> play [
-	[self hasEnded] whileFalse:[table useRoll:die roll toChangeStateOf:players current with:endPosition using:board.
-	players next]
+	[self hasEnded] whileFalse:[table useRoll:die roll toChangeStateOf:players current with:endPosition 	using:board.
+	players next. table playerPositions ]
+]
+
+{ #category : #accessing }
+Game >> playerPositions [
+	^table playerPositions
 ]
 
 { #category : #accessing }

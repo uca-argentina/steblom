@@ -84,6 +84,6 @@ DiceTest >> testSidesMustBeGreaterThanTwo [
 	-1 to: 1 do: [ :invalidSides | 
 		self
 			should: [ Die of: invalidSides ]
-			raise: InstanceCreationFailed
-			withMessageText: 'A die must have at least 2 sides' ]
+			raise: Error
+			description: 'A die must have at least 2 sides' ]
 ]
