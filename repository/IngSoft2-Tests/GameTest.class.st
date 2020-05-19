@@ -10,8 +10,7 @@ GameTest >> testGameCanEnd [
 	die := Die of:6 rolling:#(4 4 6).
 	players := #('Pedro' 'Juan' 'Jorge').
 	endPosition:=10.
-	board:= Board with:AtomicBomb new andSize:endPosition.
-	game := Game playedBy:players rolling:die until:endPosition and:2 on:board.
+	game := Game playedBy:players rolling:die until:endPosition and:2.
 	game play.
 	self assert: game hasEnded.
 ]

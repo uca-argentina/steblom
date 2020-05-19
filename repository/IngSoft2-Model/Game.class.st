@@ -24,7 +24,7 @@ Game class >> playedBy: players rolling: aDie until: endPosition [
 
 { #category : #'instance creation' }
 Game class >> playedBy: players rolling: aDie until: endPosition and:finalLap [
-	(self assertEndPositionIsPositive:endPosition) ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition 	and:finalLap.] ifFalse:[Error signal:'End position cannot be negative']
+	(self assertEndPositionIsPositive:endPosition) ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition and:finalLap.] ifFalse:[Error signal:'End position cannot be negative']
 ]
 
 { #category : #'instance creation' }
@@ -58,7 +58,7 @@ Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition and
 	endPosition:=anEndPosition.
 	finalLap:=afinalLap.
 	table:= Table withPlayers:aSetOfPlayers.
-	board:= board Random.
+	board:= Board Random:anEndPosition.
 	
 	
 ]
