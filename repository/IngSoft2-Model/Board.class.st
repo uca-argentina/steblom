@@ -8,8 +8,8 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-Board class >> Random:anEndPosition [
-	^Board new initializeRandom:anEndPosition
+Board class >> generateSized:anEndPosition [
+	^Board new initializeSized:anEndPosition
 ]
 
 { #category : #'instance creation' }
@@ -23,7 +23,7 @@ Board >> effect: anInteger [
 ]
 
 { #category : #initialization }
-Board >> initializeRandom:anEndPosition [
+Board >> initializeSized:anEndPosition [
 	tiles:=OrderedCollection new.
 	1 to: anEndPosition do:[ :i |tiles add: self randomEffect ]
 ]

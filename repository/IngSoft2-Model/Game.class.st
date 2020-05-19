@@ -17,24 +17,24 @@ Game class >> assertEndPositionIsPositive: anInteger [
 	^anInteger>0
 ]
 
-{ #category : #'instance creation' }
-Game class >> playedBy: players rolling: aDie until: endPosition [
-	(self assertEndPositionIsPositive:endPosition) ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition.] ifFalse:[Error signal:'End position cannot be negative']
+{ #category : #asserting }
+Game class >> assertFinalLapIsPositive:finalLap [
+	^finalLap>0
 ]
 
 { #category : #'instance creation' }
-Game class >> playedBy: players rolling: aDie until: endPosition and:finalLap [
-	(self assertEndPositionIsPositive:endPosition) ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition and:finalLap.] ifFalse:[Error signal:'End position cannot be negative']
+Game class >> playedBy: players rolling: aDie until: endPosition andLap:finalLap [
+	(self assertEndPositionIsPositive:endPosition) ifTrue:[(self assertFinalLapIsPositive:finalLap) 	ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition andLap:finalLap.] 	ifFalse:[Error signal:'Final lap cannot be negative']] 	ifFalse:[Error signal:'End position cannot be 	negative']
 ]
 
 { #category : #'instance creation' }
-Game class >> playedBy: players rolling: aDie until: endPosition and:finalLap on:aBoard [
-	(self assertEndPositionIsPositive:endPosition) ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition and:finalLap on:aBoard] ifFalse:[Error signal:'End position cannot be negative']
+Game class >> playedBy: players rolling: aDie until: endPosition andLap:finalLap on:aBoard [
+	(self assertEndPositionIsPositive:endPosition) ifTrue:[(self assertFinalLapIsPositive:finalLap) 	ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition andLap:finalLap 	on:aBoard.] 	ifFalse:[Error signal:'Final lap cannot be negative']] 	ifFalse:[Error signal:'End 	position cannot be 	negative']
 ]
 
 { #category : #accessing }
 Game >> finalPositions [
-	^table finalPositions.
+	self hasEnded ifTrue:[^table finalPositions] ifFalse:[Error signal:'Game has not ended yet']
 ]
 
 { #category : #boolean }
@@ -43,28 +43,19 @@ Game >> hasEnded [
 ]
 
 { #category : #initialization }
-Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition [
-	players:=CircularIterator cyclingOver:aSetOfPlayers.
-	die:=aDie.
-	endPosition:=anEndPosition.
-	table:= Table withPlayers:aSetOfPlayers.
-	
-]
-
-{ #category : #initialization }
-Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition and: afinalLap [
+Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition andLap: afinalLap [
 	players:=CircularIterator cyclingOver:aSetOfPlayers.
 	die:=aDie.
 	endPosition:=anEndPosition.
 	finalLap:=afinalLap.
 	table:= Table withPlayers:aSetOfPlayers.
-	board:= Board Random:anEndPosition.
+	board:= Board generateSized:anEndPosition.
 	
 	
 ]
 
 { #category : #initialization }
-Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition and: afinalLap on:aBoard [
+Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition andLap: afinalLap on:aBoard [
 	players:=CircularIterator cyclingOver:aSetOfPlayers.
 	die:=aDie.
 	endPosition:=anEndPosition.

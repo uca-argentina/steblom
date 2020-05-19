@@ -5,32 +5,76 @@ Class {
 }
 
 { #category : #tests }
+GameTest >> testEndPositionCantBeNegative [
+	|players die endPosition|
+	die := Die of:6 rolling:#(4 4 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition:=-20.
+	self should:[Game playedBy:players rolling:die until:endPosition andLap:2.]
+		raise:Error
+		description:'End position cannot be negative'
+	
+]
+
+{ #category : #tests }
+GameTest >> testFinalLapCantBeNegative [
+	|players die endPosition finalLap|
+	die := Die of:6 rolling:#(4 4 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition:=20.
+	finalLap:=-2.
+	self should:[Game playedBy:players rolling:die until:endPosition andLap:finalLap.]
+		raise:Error
+		description:'Final lap cannot be negative'
+	
+]
+
+{ #category : #tests }
+GameTest >> testFinalPositionsDoesntWorkIfGameHasNotEnded [
+	|game players die endPosition|
+	die := Die of:6 rolling:#(4 4 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition:=20.
+	game := Game playedBy:players rolling:die until:endPosition andLap:2.
+	self should:[game finalPositions]
+		raise:Error
+		description:'Game has not ended yet.'
+	
+]
+
+{ #category : #tests }
 GameTest >> testGameCanEnd [
 	|game players die board endPosition|
 	die := Die of:6 rolling:#(4 4 6).
 	players := #('Pedro' 'Juan' 'Jorge').
 	endPosition:=10.
-	game := Game playedBy:players rolling:die until:endPosition and:2.
+	board:=Board with:SpeedUp new andSize:endPosition.
+	game := Game playedBy:players rolling:die until:endPosition andLap:2 on:board.
 	game play.
 	self assert: game hasEnded.
 ]
 
 { #category : #tests }
-GameTest >> testPlayersFinalPositions [
-	|game players die|
-	die := Die of:6 rolling:#(4 3 6).
+GameTest >> testWinnerDoesNotExistIfGameHasNotEnded [
+	|game players die board endPosition|
+	die := Die of:6 rolling:#(4 4 6).
 	players := #('Pedro' 'Juan' 'Jorge').
-	game := Game playedBy:players rolling:die until:45 and:1.
-	game play.
-	self assertCollection: (game finalPositions) hasSameElements:{(OrderedCollection with:'Pedro' with:19 with:1).(OrderedCollection with:'Juan' with:3 with:1).(OrderedCollection with:'Jorge' with:6 with:2)}.
+	endPosition:=20.
+	game := Game playedBy:players rolling:die until:endPosition andLap:2.
+	self should:[game winner]
+		raise:Error
+		description:'Game has not ended yet.'
+	
 ]
 
 { #category : #tests }
 GameTest >> testWinnerExists [
-	|game players die|
-	die := Die of:6 rolling:#(4 3 6).
+	|game players die board endPosition|
+	die := Die of:6 rolling:#(1 1 6).
 	players := #('Pedro' 'Juan' 'Jorge').
-	game := Game playedBy:players rolling:die until:10 and:1.
+	endPosition:=10.
+	board:=Board with:SpeedUp new andSize:endPosition.
+	game := Game playedBy:players rolling:die until:endPosition andLap:1 on:board.
 	game play.
 	self assert: game winner equals:'Jorge'.
 ]

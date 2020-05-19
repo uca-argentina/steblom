@@ -30,31 +30,19 @@ Table >> applyMoonwalkToEveryoneExcept: player with: endPosition substracting: a
 ]
 
 { #category : #'applying effect' }
-Table >> applySpeedUpTo: aString [ 
-	self shouldBeImplemented.
-]
-
-{ #category : #'applying effect' }
 Table >> applySpeedUpTo: player with: endPosition [ 
 	|auxPosition|
-	rows detect:[:row | (row at:1) =player] ifFound:[:row | auxPosition:=(row 	at:2)+4].
-	(auxPosition>endPosition) ifTrue:[self addLap:player. rows detect:[:row | (row at:1) = player] 	ifFound:[:row | row at:2 put:auxPosition-endPosition]]
-	ifFalse:[rows detect:[:row | (row at:1) = player] ifFound:[:row | row at:2 put:auxPosition]]
+	rows detect:[:row | (row at:1) =player] ifFound:[:row | auxPosition:=(row at:2)+4].
+	(auxPosition>endPosition) ifTrue:[self addLap:player. self movePlayer:player to: 	auxPosition-endPosition]
+	ifFalse:[self movePlayer:player to:auxPosition]
 ]
 
 { #category : #'applying effect' }
 Table >> applyWormHoleTo: player with: endPosition [
 	|auxPosition|
-	rows detect:[:row | (row at:1) =player] ifFound:[:row | auxPosition:=(row 	at:2)-4].
-	(auxPosition<0) ifTrue:[self substractLap:player. rows detect:[:row | 	(row 	at:1) = player] 	ifFound:[:row | row at:2 put:endPosition+auxPosition]]
-	ifFalse:[rows detect:[:row | (row at:1) = player] ifFound:[:row | row at:2 	put:auxPosition]]
-]
-
-{ #category : #testing }
-Table >> arePositionsGreaterThan: endPosition [ 
-	^rows anySatisfy: [ :row| ((row at:2)>endPosition) ].
-	
-	
+	rows detect:[:row | (row at:1) =player] ifFound:[:row | auxPosition:=(row at:2)-4].
+	(auxPosition<0) ifTrue:[self substractLap:player. self movePlayer:player to:endPosition+auxPosition]
+	ifFalse:[self movePlayer:player to:auxPosition]
 ]
 
 { #category : #testing }
@@ -75,6 +63,13 @@ Table >> initializeWithPlayers: aSetOfPlayers [
 	aSetOfPlayers do: [ :player | rows add:(OrderedCollection with:player with:0 with:0) ].
 ]
 
+{ #category : #'changing state' }
+Table >> movePlayer: player to: temporaryPosition [
+	rows
+		detect: [ :row | (row at: 1) = player ]
+		ifFound: [ :row | row at: 2 put: temporaryPosition ]
+]
+
 { #category : #accessing }
 Table >> substractLap: player [
 	rows
@@ -83,27 +78,21 @@ Table >> substractLap: player [
 ]
 
 { #category : #'changing state' }
-Table >> useRoll: roll  toChangeStateOf: player [ 
-	rows detect:[:row | (row at:1) = player.] ifFound:[:row|row at:2 put:(row at:2)+roll ] ifNone:[Error signal:'Used a player name that is not playing']
-]
-
-{ #category : #'changing state' }
-Table >> useRoll: roll  toChangeStateOf: player with:endPosition [
-	|auxPosition temporaryPosition afterEffectPosition|
-	rows detect:[:row | (row at:1) = player.] ifFound:[:row| auxPosition:=((row at:2)+roll) ] 	ifNone:[Error signal:'Used a player name that is not playing'].
-	auxPosition>endPosition ifTrue:[self addLap:player.  temporaryPosition:=auxPosition-endPosition]  	ifFalse:[temporaryPosition:=auxPosition].
-	rows detect:[:row | (row at:1) = player]ifFound:[:row | row at:2 put: temporaryPosition ]
-	
-]
-
-{ #category : #'changing state' }
-Table >> useRoll: roll  toChangeStateOf: player with:endPosition using:board [
-	|auxPosition temporaryPosition |
-	rows detect:[:row | (row at:1) = player.] ifFound:[:row| auxPosition:=((row at:2)+roll) ] 	ifNone:[Error signal:'Used a player name that is not playing'].
-	auxPosition>endPosition ifTrue:[self addLap:player. temporaryPosition:=auxPosition-endPosition ] 	ifFalse:[temporaryPosition:=auxPosition].
-	rows detect:[:row | (row at:1)= player] ifFound:[:row | row at:2 put:temporaryPosition].
-	(board effect:temporaryPosition) applyTo:self usingPlayer:player with:endPosition.
-	 
+Table >> useRoll: roll toChangeStateOf: player with: endPosition using: board [
+	| auxPosition temporaryPosition |
+	rows
+		detect: [ :row | (row at: 1) = player ]
+		ifFound: [ :row | auxPosition := (row at: 2) + roll ]
+		ifNone: [ Error signal: 'Used a player name that is not playing' ].
+	auxPosition > endPosition
+		ifTrue: [ self addLap: player.
+			temporaryPosition := auxPosition - endPosition ]
+		ifFalse: [ temporaryPosition := auxPosition ].
+	self movePlayer: player to: temporaryPosition.
+	(board effect: temporaryPosition)
+		applyTo: self
+		usingPlayer: player
+		with: endPosition
 ]
 
 { #category : #testing }
