@@ -5,6 +5,6 @@ Class {
 }
 
 { #category : #'applying effect' }
-AtomicBomb >> applyTo: aTable usingPlayer: player with: endPosition [
-	aTable applyAtomicBomb
+AtomicBomb >> applyTo: player using: game [
+	game applyAtomicBomb
 ]

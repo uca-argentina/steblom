@@ -7,36 +7,41 @@ Class {
 	#category : #'IngSoft2-Model'
 }
 
-{ #category : #'as yet unclassified' }
-Board class >> generateSized:anEndPosition [
-	^Board new initializeSized:anEndPosition
+{ #category : #'instance creation' }
+Board class >> generateRandomUsing: aBoard sized: size [
+	| tiles random |
+	tiles := OrderedCollection new.
+	random := Random new.
+	1 to: size do: [ :i | tiles add: (aBoard at: (random nextInt: 100)) ].
+	^ self new initializeWith: tiles
 ]
 
 { #category : #'instance creation' }
-Board class >> with: effect andSize: size [
-	^self new initializeWith:effect andSize:size.
+Board class >> generateWith: effects sized: endPosition [
+	| tiles effectsIterator |
+	effectsIterator := CircularIterator cyclingOver: effects.
+	tiles := OrderedCollection new.
+	1 to: endPosition do: [ :i | tiles add: effectsIterator current . effectsIterator next.].
+	^ Board new initializeWith: tiles
+]
+
+{ #category : #'instance creation' }
+Board class >> with: effects andProportions: proportions sized: size [
+	| auxBoard |
+	auxBoard := OrderedCollection new.
+	effects
+		with: proportions
+		do: [ :effect :proportion | 1 to: proportion do: [ auxBoard add: effect ] ].
+	self generateRandomUsing: auxBoard sized: size.
+	
 ]
 
 { #category : #accessing }
-Board >> effect: anInteger [ 
-	^tiles at:anInteger
+Board >> effect: position [
+	^tiles at:position
 ]
 
 { #category : #initialization }
-Board >> initializeSized:anEndPosition [
-	tiles:=OrderedCollection new.
-	1 to: anEndPosition do:[ :i |tiles add: self randomEffect ]
-]
-
-{ #category : #initialization }
-Board >> initializeWith: effect andSize: size [
-	tiles:=OrderedCollection new.
-	1 to: size do:[:i | tiles add:effect]
-]
-
-{ #category : #'as yet unclassified' }
-Board >> randomEffect [
-	|index|
-	index:= Random new nextInt:100.
-	index<48 ifTrue: [ ^NoEffect new ] ifFalse:[index < 68 ifTrue:[^WormHole new] ifFalse:[index<88 	ifTrue:[^SpeedUp new] ifFalse:[index<98 ifTrue:[^MoonWalk substracting:(Random new nextInt:3)] 	ifFalse:[^AtomicBomb new] ]]]
+Board >> initializeWith:aSetOfTiles [
+	tiles:=aSetOfTiles.
 ]

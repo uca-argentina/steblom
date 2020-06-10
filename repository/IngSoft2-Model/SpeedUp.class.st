@@ -5,6 +5,6 @@ Class {
 }
 
 { #category : #'applying effect' }
-SpeedUp >> applyTo: aTable usingPlayer: player with: endPosition [  
-	aTable applySpeedUpTo: player with:endPosition
+SpeedUp >> applyTo: player using: game [
+	game applySpeedUpTo: player
 ]

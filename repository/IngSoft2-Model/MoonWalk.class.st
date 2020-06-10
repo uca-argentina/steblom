@@ -13,11 +13,11 @@ MoonWalk class >> substracting: anInteger [
 ]
 
 { #category : #'applying effect' }
-MoonWalk >> applyTo: aTable usingPlayer: player with: endPosition [ 
-	aTable applyMoonwalkToEveryoneExcept:player with:endPosition substracting:n
+MoonWalk >> applyTo: player using: game [
+	game applyMoonwalkToEveryoneExcept: player with: n
 ]
 
 { #category : #initialization }
-MoonWalk >> initializeSubstracting: anInteger [ 
-	n:=anInteger
+MoonWalk >> initializeSubstracting: anInteger [
+	n := anInteger
 ]

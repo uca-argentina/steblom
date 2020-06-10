@@ -5,6 +5,6 @@ Class {
 }
 
 { #category : #'applying effect' }
-NoEffect >> applyTo: aTable usingPlayer: aString with: anInteger [ 
+NoEffect >> applyTo: player using: game [
 	
 ]

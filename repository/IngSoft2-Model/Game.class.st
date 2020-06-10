@@ -13,71 +13,89 @@ Class {
 }
 
 { #category : #asserting }
-Game class >> assertEndPositionIsPositive: anInteger [ 
-	^anInteger>0
+Game class >> assertEndPositionIsPositive: endPosition [
+	endPosition < 0
+		ifTrue: [ Error signal: 'End position cannot be negative.' ]
 ]
 
 { #category : #asserting }
-Game class >> assertFinalLapIsPositive:finalLap [
-	^finalLap>0
+Game class >> assertFinalLapIsPositive: finalLap [
+	finalLap < 0
+		ifTrue: [ Error signal: 'Final lap cannot be negative.' ]
 ]
 
 { #category : #'instance creation' }
-Game class >> playedBy: players rolling: aDie until: endPosition andLap:finalLap [
-	(self assertEndPositionIsPositive:endPosition) ifTrue:[(self assertFinalLapIsPositive:finalLap) 	ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition andLap:finalLap.] 	ifFalse:[Error signal:'Final lap cannot be negative']] 	ifFalse:[Error signal:'End position cannot be 	negative']
+Game class >> playedBy: players rolling: aDie until: endPosition andLap: finalLap on: aBoard [
+	self assertEndPositionIsPositive: endPosition.
+	self assertFinalLapIsPositive: finalLap.
+	^ self new
+		initializePlayedBy: players
+		rolling: aDie
+		until: endPosition
+		andLap: finalLap
+		on: aBoard
 ]
 
-{ #category : #'instance creation' }
-Game class >> playedBy: players rolling: aDie until: endPosition andLap:finalLap on:aBoard [
-	(self assertEndPositionIsPositive:endPosition) ifTrue:[(self assertFinalLapIsPositive:finalLap) 	ifTrue:[^self new initializePlayedBy:players rolling: 	aDie until:endPosition andLap:finalLap 	on:aBoard.] 	ifFalse:[Error signal:'Final lap cannot be negative']] 	ifFalse:[Error signal:'End 	position cannot be 	negative']
+{ #category : #'applying effect' }
+Game >> applyAtomicBomb [
+	table sendAllPlayersToBeginning
+]
+
+{ #category : #'applying effect' }
+Game >> applyMoonwalkToEveryoneExcept: player with: n [
+	table moveEveryoneExcept: player backward: n with: endPosition
+]
+
+{ #category : #'applying effect' }
+Game >> applySpeedUpTo: player [
+	table move: player forward: 4 with: endPosition
+]
+
+{ #category : #'applying effect' }
+Game >> applyWormHoleTo: player [ 
+	table move:player backward:4 with:endPosition
 ]
 
 { #category : #accessing }
 Game >> finalPositions [
-	self hasEnded ifTrue:[^table finalPositions] ifFalse:[Error signal:'Game has not ended yet']
+	self hasEnded
+		ifTrue: [ ^ table finalPositions ]
+		ifFalse: [ Error signal: 'Game has not ended yet' ]
 ]
 
 { #category : #boolean }
 Game >> hasEnded [
-	^table arePositionsGreaterThan:endPosition and:finalLap.
+	^ table arePositionsGreaterThan: finalLap
 ]
 
 { #category : #initialization }
-Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition andLap: afinalLap [
-	players:=CircularIterator cyclingOver:aSetOfPlayers.
-	die:=aDie.
-	endPosition:=anEndPosition.
-	finalLap:=afinalLap.
-	table:= Table withPlayers:aSetOfPlayers.
-	board:= Board generateSized:anEndPosition.
-	
-	
-]
-
-{ #category : #initialization }
-Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition andLap: afinalLap on:aBoard [
-	players:=CircularIterator cyclingOver:aSetOfPlayers.
-	die:=aDie.
-	endPosition:=anEndPosition.
-	finalLap:=afinalLap.
-	table:= Table withPlayers:aSetOfPlayers.
-	board:= aBoard.
-	
-	
+Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition andLap: afinalLap on: aBoard [
+	players := CircularIterator cyclingOver: aSetOfPlayers.
+	die := aDie.
+	endPosition := anEndPosition.
+	finalLap := afinalLap.
+	table := Table withPlayers: aSetOfPlayers.
+	board := aBoard
 ]
 
 { #category : #playing }
-Game >> play [
-	[self hasEnded] whileFalse:[table useRoll:die roll toChangeStateOf:players current with:endPosition 	using:board.
-	players next. table playerPositions ]
+Game >> playATurn [
+	table move: players current forward: die roll with: endPosition.
+	(board effect: (table whatIsThePositionOf: players current)) applyTo: players current using: self.
+	players next.
 ]
 
 { #category : #accessing }
 Game >> playerPositions [
-	^table playerPositions
+	^ table playerPositions
+]
+
+{ #category : #accessing }
+Game >> positionOf: player [
+	^ table whatIsThePositionOf: player
 ]
 
 { #category : #accessing }
 Game >> winner [
-	^table whoIsWinner:finalLap.
+	^ table whoIsWinner: finalLap
 ]
