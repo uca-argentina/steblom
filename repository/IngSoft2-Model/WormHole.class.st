@@ -5,6 +5,6 @@ Class {
 }
 
 { #category : #'applying effect' }
-WormHole >> applyTo: aTable usingPlayer: player with: endPosition [
-	aTable applyWormHoleTo:player with:endPosition
+WormHole >> applyTo: player using: game [
+	game applyWormHoleTo: player
 ]
