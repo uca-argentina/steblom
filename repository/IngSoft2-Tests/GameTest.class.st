@@ -187,11 +187,7 @@ GameTest >> testPlayersPositions [
 	die := Die of: 6 rolling: #(1 6 1).
 	players := #('Pedro' 'Juan' 'Jorge').
 	endPosition := 10.
-	effects := {NoEffect new.
-	SpeedUp new.
-	WormHole new.
-	AtomicBomb new.
-	(MoonWalk substracting: 2)}.
+	effects := {NoEffect new.}.
 	board := Board generateWith: effects sized: endPosition.
 	game := Game
 		playedBy: players

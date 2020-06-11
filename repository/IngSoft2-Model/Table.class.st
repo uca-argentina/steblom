@@ -27,14 +27,6 @@ Table >> initializeWithPlayers: aSetOfPlayers [
 ]
 
 { #category : #accessing }
-Table >> move: player backward: numberOfTiles [ 
-	positions
-		detect: [ :position | position areYou: player ]
-		ifFound: [ :position | position backward: numberOfTiles ]
-		ifNone: [ Error signal: 'Player not found.' ]
-]
-
-{ #category : #accessing }
 Table >> move: player backward: numberOfTiles with: endPosition [
 	positions
 		detect: [ :position | position areYou: player ]
@@ -80,4 +72,12 @@ Table >> whatIsThePositionOf:player [
 		detect: [ :position | position areYou: player ]
 		ifFound: [ :position | ^position whereAreYou  ]
 		ifNone: [ Error signal: 'Player not found.' ]
+]
+
+{ #category : #'as yet unclassified' }
+Table >> whoIsWinner: finalLap [
+	positions
+		detect: [ :position | position isYourLapGreaterThan: finalLap ]
+		ifFound: [ :position | ^ position owner ]
+		ifNone: [ Error signal: 'Game has not ended yet.' ]
 ]
