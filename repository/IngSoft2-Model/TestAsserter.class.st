@@ -11,7 +11,7 @@ Override my class-side #isLogging in subclasses to have failed assertion descrip
 Class {
 	#name : #TestAsserter,
 	#superclass : #Object,
-	#category : #'IngSoft2-Tests'
+	#category : #'IngSoft2-Model'
 }
 
 { #category : #asserting }

@@ -11,7 +11,7 @@ Class {
 		'options',
 		'currentIndex'
 	],
-	#category : #'IngSoft2-Tests'
+	#category : #'IngSoft2-Model'
 }
 
 { #category : #'instance creation' }

@@ -4,10 +4,15 @@ Class {
 	#instVars : [
 		'die',
 		'endPosition',
-		'table',
 		'players',
 		'finalLap',
-		'board'
+		'board',
+		'cards',
+		'handsTable',
+		'positionsTable',
+		'lastEffect',
+		'lastPlayer',
+		'lastCard'
 	],
 	#category : #'IngSoft2-Model'
 }
@@ -25,77 +30,164 @@ Game class >> assertFinalLapIsPositive: finalLap [
 ]
 
 { #category : #'instance creation' }
-Game class >> playedBy: players rolling: aDie until: endPosition andLap: finalLap on: aBoard [
+Game class >> playedBy: players rolling: aDie playing: cards until: endPosition andLap: finalLap on: aBoard [
 	self assertEndPositionIsPositive: endPosition.
 	self assertFinalLapIsPositive: finalLap.
 	^ self new
 		initializePlayedBy: players
 		rolling: aDie
+		playing: cards
 		until: endPosition
-		andLap: finalLap
+		and: finalLap
 		on: aBoard
 ]
 
 { #category : #'applying effect' }
 Game >> applyAtomicBomb [
-	table sendAllPlayersToBeginning
+	lastEffect := AtomicBomb new.
+	positionsTable sendAllPlayersToBeginning
+]
+
+{ #category : #'applying card' }
+Game >> applyCard: repeat of: player [ 
+	handsTable assert: player has: repeat.
+	self assertLastEffectNotNil.
+	lastEffect applyTo: lastPlayer using: self.
+	lastCard := repeat.
+]
+
+{ #category : #'applying card' }
+Game >> applyCard: redo of: ownerPlayer on: card of: appliedPlayer [
+	handsTable assert: ownerPlayer has: redo.
+	lastCard applyRedoOn: card of: appliedPlayer using: self
+	
+]
+
+{ #category : #'applying card' }
+Game >> applyCard: cancellation of: player toCard: acceleration [
+	handsTable assert: player has: cancellation.
+	handsTable assert: acceleration isAppliedTo: player.
+	handsTable remove: acceleration.
+	lastCard := cancellation
+]
+
+{ #category : #'applying card' }
+Game >> applyCard: cancellation of: ownerPlayer toCard: card of: appliedPlayer [
+	handsTable assert: ownerPlayer has: cancellation.
+	handsTable assert: card isAppliedTo: appliedPlayer.
+	handsTable remove: card to: appliedPlayer.
+	lastCard := cancellation
+]
+
+{ #category : #'applying effect' }
+Game >> applyCroupierTo: player [
+	handsTable giveCardTo: player with: cards
 ]
 
 { #category : #'applying effect' }
 Game >> applyMoonwalkToEveryoneExcept: player with: n [
-	table moveEveryoneExcept: player backward: n with: endPosition
+	lastEffect := MoonWalk substracting: n.
+	lastPlayer := player.
+	positionsTable moveEveryoneExcept: player backward: n with: endPosition
+]
+
+{ #category : #'applying card' }
+Game >> applyOnAll: acceleration [
+	handsTable assert: players current has: acceleration.
+	handsTable applyOnAll: acceleration
+]
+
+{ #category : #'applying card' }
+Game >> applyPermanent: card on: player [
+	handsTable assert: players current has: card.
+	handsTable applyPermanent: card on: player.
+	handsTable remove: card from: players current
+]
+
+{ #category : #'applying effect' }
+Game >> applyRandomCroupierTo: player [
+	handsTable giveRandomCardTo: player with: cards
+]
+
+{ #category : #'applying card' }
+Game >> applyRepeat [
+	self assertLastEffectNotNil.
+	lastEffect applyTo: lastPlayer using: self.
+	
 ]
 
 { #category : #'applying effect' }
 Game >> applySpeedUpTo: player [
-	table move: player forward: 4 with: endPosition
+	lastEffect := SpeedUp new.
+	lastPlayer := player.
+	positionsTable move: player forward: 4 with: endPosition
 ]
 
 { #category : #'applying effect' }
 Game >> applyWormHoleTo: player [ 
-	table move:player backward:4 with:endPosition
+	lastEffect := WormHole new.
+	lastPlayer := player.
+	positionsTable move:player backward:4 with:endPosition
+]
+
+{ #category : #testing }
+Game >> assertLastEffectNotNil [
+	lastEffect ~= nil
+		ifFalse: [ Error signal: 'Cannot use repeat before someone rolls die' ]
+]
+
+{ #category : #accessing }
+Game >> count: aClass [ 
+	^ handsTable count: aClass
 ]
 
 { #category : #accessing }
 Game >> finalPositions [
 	self hasEnded
-		ifTrue: [ ^ table finalPositions ]
+		ifTrue: [ ^ positionsTable finalPositions ]
 		ifFalse: [ Error signal: 'Game has not ended yet' ]
 ]
 
 { #category : #boolean }
 Game >> hasEnded [
-	^ table arePositionsGreaterThan: finalLap
+	^ positionsTable arePositionsGreaterThan: finalLap
 ]
 
 { #category : #initialization }
-Game >> initializePlayedBy: aSetOfPlayers rolling: aDie until: anEndPosition andLap: afinalLap on: aBoard [
+Game >> initializePlayedBy: aSetOfPlayers rolling: aDie playing: aSetOfCards until: anEndPosition and: afinalLap on: aBoard [
 	players := CircularIterator cyclingOver: aSetOfPlayers.
 	die := aDie.
+	cards := aSetOfCards.
+	handsTable := HandsTable withPlayers: aSetOfPlayers and: aSetOfCards.
 	endPosition := anEndPosition.
 	finalLap := afinalLap.
-	table := Table withPlayers: aSetOfPlayers.
+	positionsTable := PositionsTable withPlayers: aSetOfPlayers.
 	board := aBoard
 ]
 
 { #category : #playing }
 Game >> playATurn [
-	table move: players current forward: die roll with: endPosition.
-	(board effect: (table whatIsThePositionOf: players current)) applyTo: players current using: self.
-	players next.
+	positionsTable
+		move: players current
+		forward: die roll + (handsTable cardsEffectFor: players current)
+		with: endPosition.
+	(board effect: (positionsTable whatIsThePositionOf: players current))
+		applyTo: players current
+		using: self.
+	players next
 ]
 
 { #category : #accessing }
 Game >> playerPositions [
-	^ table playerPositions
+	^ positionsTable playerPositions
 ]
 
 { #category : #accessing }
 Game >> positionOf: player [
-	^ table whatIsThePositionOf: player
+	^ positionsTable whatIsThePositionOf: player
 ]
 
 { #category : #accessing }
 Game >> winner [
-	^ table whoIsWinner: finalLap
+	^ positionsTable whoIsWinner: finalLap
 ]

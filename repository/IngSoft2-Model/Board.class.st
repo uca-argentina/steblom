@@ -26,14 +26,19 @@ Board class >> generateWith: effects sized: endPosition [
 ]
 
 { #category : #'instance creation' }
-Board class >> with: effects andProportions: proportions sized: size [
+Board class >> with: effects and: proportions sized: size [
 	| auxBoard |
 	auxBoard := OrderedCollection new.
 	effects
 		with: proportions
-		do: [ :effect :proportion | 1 to: proportion do: [ auxBoard add: effect ] ].
-	self generateRandomUsing: auxBoard sized: size.
+		do: [ :effect :proportion | 1 to: proportion do: [ :i |auxBoard add: effect ] ].
+	^self generateRandomUsing: auxBoard sized: size.
 	
+]
+
+{ #category : #accessing }
+Board >> count: effect [
+	^ tiles count: [ :tile | tile isMemberOf: effect ]
 ]
 
 { #category : #accessing }
