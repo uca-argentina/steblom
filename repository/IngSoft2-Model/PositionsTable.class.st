@@ -1,5 +1,5 @@
 Class {
-	#name : #Table,
+	#name : #PositionsTable,
 	#superclass : #Object,
 	#instVars : [
 		'positions'
@@ -8,12 +8,12 @@ Class {
 }
 
 { #category : #'instance creation' }
-Table class >> withPlayers: aSetOfPlayers [ 
+PositionsTable class >> withPlayers: aSetOfPlayers [ 
 	^self new initializeWithPlayers:aSetOfPlayers
 ]
 
 { #category : #testing }
-Table >> arePositionsGreaterThan: finalLap [
+PositionsTable >> arePositionsGreaterThan: finalLap [
 	positions
 		detect: [ :position | position isYourLapGreaterThan: finalLap ]
 		ifFound: [ ^ true ]
@@ -21,13 +21,13 @@ Table >> arePositionsGreaterThan: finalLap [
 ]
 
 { #category : #initialization }
-Table >> initializeWithPlayers: aSetOfPlayers [
+PositionsTable >> initializeWithPlayers: aSetOfPlayers [
 	positions := OrderedCollection new.
 	aSetOfPlayers do: [ :player | positions add: (Position for: player) ]
 ]
 
 { #category : #accessing }
-Table >> move: player backward: numberOfTiles with: endPosition [
+PositionsTable >> move: player backward: numberOfTiles with: endPosition [
 	positions
 		detect: [ :position | position areYou: player ]
 		ifFound: [ :position | position backward: numberOfTiles with: endPosition ]
@@ -35,7 +35,7 @@ Table >> move: player backward: numberOfTiles with: endPosition [
 ]
 
 { #category : #accessing }
-Table >> move: player forward: numberOfTiles with: endPosition [
+PositionsTable >> move: player forward: numberOfTiles with: endPosition [
 	positions
 		detect: [ :position | position areYou: player ]
 		ifFound: [ :position | position forward: numberOfTiles with: endPosition ]
@@ -43,7 +43,7 @@ Table >> move: player forward: numberOfTiles with: endPosition [
 ]
 
 { #category : #accessing }
-Table >> moveEveryoneExcept: player backward: numberOfTiles with: endPosition [
+PositionsTable >> moveEveryoneExcept: player backward: numberOfTiles with: endPosition [
 	positions
 		do: [ :position | 
 			(position areYou: player)
@@ -51,7 +51,7 @@ Table >> moveEveryoneExcept: player backward: numberOfTiles with: endPosition [
 ]
 
 { #category : #accessing }
-Table >> playerPositions [
+PositionsTable >> playerPositions [
 	| auxPositions sortedPlayers |
 	auxPositions := SortedCollection new.
 	auxPositions sort: [ :a :b | a sumPosition > b sumPosition ].
@@ -62,12 +62,12 @@ Table >> playerPositions [
 ]
 
 { #category : #accessing }
-Table >> sendAllPlayersToBeginning [
+PositionsTable >> sendAllPlayersToBeginning [
 	positions do: [ :position | position goToBeginning ]
 ]
 
 { #category : #accessing }
-Table >> whatIsThePositionOf:player [
+PositionsTable >> whatIsThePositionOf:player [
 	positions
 		detect: [ :position | position areYou: player ]
 		ifFound: [ :position | ^position whereAreYou  ]
@@ -75,7 +75,7 @@ Table >> whatIsThePositionOf:player [
 ]
 
 { #category : #'as yet unclassified' }
-Table >> whoIsWinner: finalLap [
+PositionsTable >> whoIsWinner: finalLap [
 	positions
 		detect: [ :position | position isYourLapGreaterThan: finalLap ]
 		ifFound: [ :position | ^ position owner ]

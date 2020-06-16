@@ -20,11 +20,6 @@ Position >> areYou: player [
 ]
 
 { #category : #accessing }
-Position >> backward: anInteger [ 
-	self shouldBeImplemented.
-]
-
-{ #category : #accessing }
 Position >> backward: numberOfTiles with: endPosition [
 	position - numberOfTiles < 1
 		ifTrue: [ lap := lap - 1.

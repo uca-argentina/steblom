@@ -20,7 +20,7 @@ Class {
 	#instVars : [
 		'sequence'
 	],
-	#category : #'IngSoft2-Tests'
+	#category : #'IngSoft2-Model'
 }
 
 { #category : #'instance creation' }
