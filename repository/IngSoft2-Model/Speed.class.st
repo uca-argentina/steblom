@@ -8,3 +8,8 @@ Class {
 Speed >> effect [
 	^ 1
 ]
+
+{ #category : #removing }
+Speed >> removeYourselfOf: player using: game [
+	game remove: self to: player
+]

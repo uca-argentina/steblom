@@ -36,10 +36,25 @@ Game class >> playedBy: players rolling: aDie playing: cards until: endPosition 
 	^ self new
 		initializePlayedBy: players
 		rolling: aDie
+		playing: (CircularIterator cyclingOver:cards)
+		until: endPosition
+		and: finalLap
+		on: aBoard
+		storedOn: (HandsTable with: players and: (CircularIterator cyclingOver:cards))
+]
+
+{ #category : #'instance creation' }
+Game class >> playedBy: players rolling: aDie playingRandom: cards until: endPosition andLap: finalLap on: aBoard [
+	self assertEndPositionIsPositive: endPosition.
+	self assertFinalLapIsPositive: finalLap.
+	^ self new
+		initializePlayedBy: players
+		rolling: aDie
 		playing: cards
 		until: endPosition
 		and: finalLap
 		on: aBoard
+		storedOn: (HandsTable generateRandomWith: players and: cards )
 ]
 
 { #category : #'applying effect' }
@@ -67,7 +82,7 @@ Game >> applyCard: redo of: ownerPlayer on: card of: appliedPlayer [
 Game >> applyCard: cancellation of: player toCard: acceleration [
 	handsTable assert: player has: cancellation.
 	handsTable assert: acceleration isAppliedTo: player.
-	handsTable remove: acceleration.
+	acceleration removeYourselfOf: player using: self.
 	lastCard := cancellation
 ]
 
@@ -75,7 +90,7 @@ Game >> applyCard: cancellation of: player toCard: acceleration [
 Game >> applyCard: cancellation of: ownerPlayer toCard: card of: appliedPlayer [
 	handsTable assert: ownerPlayer has: cancellation.
 	handsTable assert: card isAppliedTo: appliedPlayer.
-	handsTable remove: card to: appliedPlayer.
+	card removeYourselfOf: appliedPlayer using: self.
 	lastCard := cancellation
 ]
 
@@ -154,11 +169,11 @@ Game >> hasEnded [
 ]
 
 { #category : #initialization }
-Game >> initializePlayedBy: aSetOfPlayers rolling: aDie playing: aSetOfCards until: anEndPosition and: afinalLap on: aBoard [
+Game >> initializePlayedBy: aSetOfPlayers rolling: aDie playing: aSetOfCards until: anEndPosition and: afinalLap on: aBoard storedOn: aHandsTable [
 	players := CircularIterator cyclingOver: aSetOfPlayers.
 	die := aDie.
 	cards := aSetOfCards.
-	handsTable := HandsTable withPlayers: aSetOfPlayers and: aSetOfCards.
+	handsTable := aHandsTable.
 	endPosition := anEndPosition.
 	finalLap := afinalLap.
 	positionsTable := PositionsTable withPlayers: aSetOfPlayers.
@@ -185,6 +200,21 @@ Game >> playerPositions [
 { #category : #accessing }
 Game >> positionOf: player [
 	^ positionsTable whatIsThePositionOf: player
+]
+
+{ #category : #removing }
+Game >> remove: acceleration [
+	handsTable remove: acceleration
+]
+
+{ #category : #removing }
+Game >> remove: card to: player [ 
+	handsTable remove: card to: player
+]
+
+{ #category : #removing }
+Game >> removeCardsFrom: player [ 
+	handsTable removeCardsFrom: player
 ]
 
 { #category : #accessing }

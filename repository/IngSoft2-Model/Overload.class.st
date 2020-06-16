@@ -8,3 +8,8 @@ Class {
 Overload >> effect [
 	^ -2
 ]
+
+{ #category : #removing }
+Overload >> removeYourselfOf: player using: game [
+	game remove: self to: player
+]

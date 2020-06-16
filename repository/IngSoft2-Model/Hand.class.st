@@ -19,12 +19,11 @@ Hand class >> randomCardFrom: cards [
 
 { #category : #'instance creation' }
 Hand class >> with: player and: cards [
-	| cardsIterator ownedCards |
-	cardsIterator := CircularIterator cyclingOver: cards.
+	| ownedCards |
 	ownedCards := OrderedCollection new.
 	1 to: 2 do: [ :i | 
-		ownedCards add: cardsIterator current.
-		cardsIterator next ].
+		ownedCards add: cards current.
+		cards next ].
 	^ self new initializeFor: player with: ownedCards
 ]
 
@@ -102,6 +101,12 @@ Hand >> initializeFor: player with: aSetOfCards [
 { #category : #removing }
 Hand >> remove: acceleration [ 
 	appliedCards remove: acceleration.
+]
+
+{ #category : #removing }
+Hand >> removeAllCards [
+	ownedCards := OrderedCollection new.
+	appliedCards := OrderedCollection new.
 ]
 
 { #category : #removing }

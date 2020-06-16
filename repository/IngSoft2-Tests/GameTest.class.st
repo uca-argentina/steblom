@@ -210,6 +210,30 @@ GameTest >> testEndPositionCantBeNegative [
 ]
 
 { #category : #tests }
+GameTest >> testErrorIfPlayerDoesNotOwnTheCard [
+	| game players die board endPosition effects overload cards |
+	die := Die of: 6 rolling: #(4 4 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 20.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	overload := Overload new.
+	cards := { overload }.
+	game := Game
+		playedBy: players
+		rolling: die
+		playing: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	self
+		should: [ game applyOnAll:Acceleration new ]
+		raise: Error
+		whoseDescriptionIncludes: 'Current player does not own that card'
+		description: 'Current player does not own that card'
+]
+
+{ #category : #tests }
 GameTest >> testFinalLapCantBeNegative [
 	| players die endPosition finalLap effects board overload cards |
 	die := Die of: 6 rolling: #(4 4 6).
@@ -415,9 +439,9 @@ GameTest >> testRandomCardsDelivery [
 	Acceleration new.
 	Cancellation new.
 	Repeat new}.
-	4000
+	25000
 		timesRepeat: [ handsTable := HandsTable
-				generateRandomWithPlayers: players
+				generateRandomWith: players
 				and: cards.
 			overloadCounter := overloadCounter + (handsTable count: Overload).
 			speedCounter := speedCounter + (handsTable count: Speed).
@@ -427,17 +451,17 @@ GameTest >> testRandomCardsDelivery [
 				+ (handsTable count: Cancellation).
 			repeatCounter := repeatCounter + (handsTable count: Repeat) ].
 	self
-		assert: (overloadCounter / 16000 * 100) rounded
-		equals: (speedCounter / 16000 * 100) rounded.
+		assert: (overloadCounter / 100000 * 100) rounded
+		equals: (speedCounter / 100000 * 100) rounded.
 	self
-		assert: (overloadCounter / 16000 * 100) rounded
-		equals: (accelerationCounter / 16000 * 100) rounded.
+		assert: (overloadCounter / 100000 * 100) rounded
+		equals: (accelerationCounter / 100000 * 100) rounded.
 	self
-		assert: (overloadCounter / 16000 * 100) rounded
-		equals: (cancellationCounter / 16000 * 100) rounded.
+		assert: (overloadCounter / 100000 * 100) rounded
+		equals: (cancellationCounter / 100000 * 100) rounded.
 	self
-		assert: (overloadCounter / 16000 * 100) rounded
-		equals: (repeatCounter / 16000 * 100) rounded
+		assert: (overloadCounter / 100000 * 100) rounded
+		equals: (repeatCounter / 100000 * 100) rounded
 ]
 
 { #category : #tests }
@@ -463,34 +487,74 @@ GameTest >> testRandomCroupier [
 	game := Game
 		playedBy: players
 		rolling: die
-		playing: cards
+		playingRandom: cards
 		until: endPosition
 		andLap: 2
 		on: board.
-	game applyPermanent: overload on: 'Jorge'.
-	game applyPermanent: speed on: 'Jorge'.
-	16000 timesRepeat: [ game applyRandomCroupierTo: 'Jorge' ].
+	game removeCardsFrom:'Jorge'.
+	100000 timesRepeat: [ game applyRandomCroupierTo: 'Jorge' ].
 	overloadCounter := game count: Overload.
 	speedCounter := game count: Speed.
 	accelerationCounter := game count: Acceleration.
 	cancellationCounter := game count: Cancellation.
 	repeatCounter := game count: Repeat.
 	self
-		assert: (overloadCounter / 16000 * 100) rounded
-		equals: (speedCounter / 16000 * 100) rounded.
+		assert: (overloadCounter / 100000 * 100) rounded
+		equals: (speedCounter / 100000 * 100) rounded.
 	self
-		assert: (overloadCounter / 16000 * 100) rounded
-		equals: (accelerationCounter / 16000 * 100) rounded.
+		assert: (overloadCounter / 100000 * 100) rounded
+		equals: (accelerationCounter / 100000 * 100) rounded.
 	self
-		assert: (overloadCounter / 16000 * 100) rounded
-		equals: (cancellationCounter / 16000 * 100) rounded.
+		assert: (overloadCounter / 100000 * 100) rounded
+		equals: (cancellationCounter / 100000 * 100) rounded.
 	self
-		assert: (overloadCounter / 16000 * 100) rounded
-		equals: (repeatCounter / 16000 * 100) rounded
+		assert: (overloadCounter / 100000 * 100) rounded
+		equals: (repeatCounter / 100000 * 100) rounded
 ]
 
 { #category : #tests }
-GameTest >> testRedo [
+GameTest >> testRedoOnCancellation [
+	| game players die board endPosition effects cards redo speed cancellation |
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 30.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	redo := Redo new.
+	speed := Speed new.
+	cancellation := Cancellation new.
+	cards := {speed.
+	redo.
+	cancellation}.
+	game := Game
+		playedBy: players
+		rolling: die
+		playing: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	game applyPermanent: speed on: 'Pedro'.
+	game playATurn.
+	self assert: (game positionOf: 'Pedro') equals: 7.
+	game applyPermanent: speed on: 'Juan'.
+	game
+		applyCard: cancellation
+		of: 'Juan'
+		toCard: speed
+		of: 'Pedro'.
+	game
+		applyCard: redo
+		of: 'Pedro'
+		on: speed
+		of: 'Juan'.
+	game playATurn.
+	game playATurn.
+	game playATurn.
+	self assert: (game positionOf: 'Pedro') equals: 12
+]
+
+{ #category : #tests }
+GameTest >> testRedoOnRepeat [
 	| game players die board endPosition effects cards redo repeat |
 	die := Die of: 6 rolling: #(5 5 6).
 	players := #('Pedro' 'Juan' 'Jorge').

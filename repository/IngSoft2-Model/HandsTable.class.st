@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #'instance creation' }
-HandsTable class >> generateRandomWithPlayers: players and: cards [
+HandsTable class >> generateRandomWith: players and: cards [
 	| hands |
 	hands := OrderedCollection new.
 	players do: [ :player | hands add: (Hand with: player andRandom: cards) ].
@@ -16,7 +16,7 @@ HandsTable class >> generateRandomWithPlayers: players and: cards [
 ]
 
 { #category : #'instance creation' }
-HandsTable class >> withPlayers: players and: cards [
+HandsTable class >> with: players and: cards [
 	| hands |
 	hands := OrderedCollection new.
 	players do: [ :player | hands add: (Hand with: player and: cards) ].
@@ -77,8 +77,10 @@ HandsTable >> count: aClass [
 HandsTable >> giveCardTo: player with: cards [
 	hands
 		detect: [ :hand | hand areYou: player ]
-		ifFound: [ :hand | hand give: (cards at: 1) ]
-		ifNone: [ Error signal:'Player does not exist' ]
+		ifFound: [ :hand | 
+			hand give: cards current.
+			cards next ]
+		ifNone: [ Error signal: 'Player does not exist' ]
 ]
 
 { #category : #accessing }
@@ -113,4 +115,11 @@ HandsTable >> remove: card to: player [
 		detect: [ :hand | hand areYou: player ]
 		ifFound: [ :hand | hand remove: card ]
 		ifNone: [ Error signal: 'Player does not exist' ]
+]
+
+{ #category : #removing }
+HandsTable >> removeCardsFrom: player [
+	hands detect:[ :hand | hand areYou:player]
+	ifFound: [ :hand | hand removeAllCards ]
+	ifNone: [ Error signal: 'Player does not exist' ]
 ]
