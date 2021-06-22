@@ -92,13 +92,6 @@ Game >> applyCancellationWithRedo: cancellation onCard: card of: player [
 	card removeYourselfOf: player using: self
 ]
 
-{ #category : #'applying card' }
-Game >> applyCard: redo of: ownerPlayer on: card of: appliedPlayer [
-	handsTable assert: ownerPlayer has: redo.
-	lastCard applyRedoOn: card of: appliedPlayer using: self
-	
-]
-
 { #category : #'applying effect' }
 Game >> applyCroupierTo: player [
 	handsTable giveCardTo: player with: cards
