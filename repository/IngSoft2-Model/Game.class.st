@@ -64,12 +64,21 @@ Game >> applyAtomicBomb [
 ]
 
 { #category : #'applying card' }
-Game >> applyCard: repeat of: player [ 
-	| game |
-	handsTable assert: player has: repeat.
-	game := self.
-	lastEffect ifNotNil:[lastEffect applyTo: lastPlayer using: game].
-	lastCard := repeat.
+Game >> applyCancellation: cancellation onCard: acceleration [ 
+	handsTable assert: players current has: cancellation.
+	handsTable assert: acceleration isAppliedTo: players current.
+	acceleration removeYourselfOfUsing: self.
+	handsTable remove: cancellation from: players current.
+	lastCard := cancellation
+]
+
+{ #category : #'applying card' }
+Game >> applyCancellation: cancellation onCard: card of: player [
+	handsTable assert: players current has: cancellation.
+	handsTable assert: card isAppliedTo: player.
+	card removeYourselfOf: player using: self.
+	handsTable remove: cancellation from: players current.
+	lastCard := cancellation
 ]
 
 { #category : #'applying card' }
@@ -77,22 +86,6 @@ Game >> applyCard: redo of: ownerPlayer on: card of: appliedPlayer [
 	handsTable assert: ownerPlayer has: redo.
 	lastCard applyRedoOn: card of: appliedPlayer using: self
 	
-]
-
-{ #category : #'applying card' }
-Game >> applyCard: cancellation of: player toCard: acceleration [
-	handsTable assert: player has: cancellation.
-	handsTable assert: acceleration isAppliedTo: player.
-	acceleration removeYourselfOf: player using: self.
-	lastCard := cancellation
-]
-
-{ #category : #'applying card' }
-Game >> applyCard: cancellation of: ownerPlayer toCard: card of: appliedPlayer [
-	handsTable assert: ownerPlayer has: cancellation.
-	handsTable assert: card isAppliedTo: appliedPlayer.
-	card removeYourselfOf: appliedPlayer using: self.
-	lastCard := cancellation
 ]
 
 { #category : #'applying effect' }
@@ -127,10 +120,12 @@ Game >> applyRandomCroupierTo: player [
 ]
 
 { #category : #'applying card' }
-Game >> applyRepeat [
+Game >> applyRepeat: repeat [ 
 	| game |
+	handsTable assert: players current has: repeat.
 	game := self.
-	lastEffect ifNotNil: [ lastEffect applyTo: lastPlayer using: game ]
+	lastEffect ifNotNil:[lastEffect applyTo: lastPlayer using: game].
+	lastCard := repeat.
 ]
 
 { #category : #'applying effect' }

@@ -16,7 +16,7 @@ Position class >> for: player [
 
 { #category : #comparing }
 Position >> > aPosition [
-	self lap > aPosition lap
+	lap > aPosition lap
 		ifTrue: [ ^ true ]
 		ifFalse: [ self lap == aPosition lap
 				ifTrue: [ ^ tile > aPosition tile ]
@@ -69,11 +69,6 @@ Position >> lap [
 { #category : #accessing }
 Position >> owner [
 	^ owner
-]
-
-{ #category : #accessing }
-Position >> sumPosition [
-	^ lap + tile
 ]
 
 { #category : #getter }

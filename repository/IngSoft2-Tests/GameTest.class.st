@@ -84,7 +84,7 @@ GameTest >> testCancellationOnAcceleration [
 	effects := {NoEffect new}.
 	board := Board generateWith: effects sized: endPosition.
 	acceleration := Acceleration new.
-	cancellation := Acceleration new.
+	cancellation := Cancellation new.
 	cards := {acceleration.
 	cancellation}.
 	game := Game
@@ -94,10 +94,10 @@ GameTest >> testCancellationOnAcceleration [
 		until: endPosition
 		andLap: 2
 		on: board.
-	game applyOnAll: acceleration.
+	acceleration applyUsing: game.
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 7.
-	game applyCard: cancellation of: 'Pedro' toCard: acceleration.
+	cancellation applyUsing: game onCard: acceleration.
 	game playATurn.
 	self assert: (game positionOf: 'Juan') equals: 6
 ]
@@ -121,10 +121,10 @@ GameTest >> testCancellationOnOverLoad [
 		until: endPosition
 		andLap: 2
 		on: board.
-	game applyPermanent: overload on:'Pedro'.
+	overload applyUsing: game on: 'Pedro'.
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 4.
-	game applyCard: cancellation of: 'Jorge' toCard: overload of:'Pedro'.
+	cancellation applyUsing: game onCard: overload onPlayer: 'Pedro'.
 	game playATurn.
 	game playATurn.
 	game playATurn.
@@ -150,10 +150,10 @@ GameTest >> testCancellationOnSpeed [
 		until: endPosition
 		andLap: 2
 		on: board.
-	game applyPermanent: speed on:'Pedro'.
+	speed applyUsing: game on: 'Pedro'.
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 7.
-	game applyCard: cancellation of: 'Jorge' toCard: speed of:'Pedro'.
+	cancellation applyUsing: game onCard: speed onPlayer: 'Pedro'.
 	game playATurn.
 	game playATurn.
 	game playATurn.
@@ -363,7 +363,7 @@ GameTest >> testOverload [
 		until: endPosition
 		andLap: 2
 		on: board.
-	game applyPermanent: overload on: 'Juan'.
+	overload applyUsing:game on:'Juan'.
 	game playATurn.
 	game playATurn.
 	self assert: (game positionOf: 'Juan') equals: 4
@@ -537,11 +537,7 @@ GameTest >> testRedoOnCancellation [
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 7.
 	game applyPermanent: speed on: 'Juan'.
-	game
-		applyCard: cancellation
-		of: 'Juan'
-		toCard: speed
-		of: 'Pedro'.
+	cancellation applyUsing: game onCard: speed onPlayer:'Pedro'.
 	game
 		applyCard: redo
 		of: 'Pedro'
@@ -573,7 +569,7 @@ GameTest >> testRedoOnRepeat [
 		andLap: 2
 		on: board.
 	game playATurn.
-	game applyCard: repeat of: 'Pedro'.
+	repeat applyUsing: game.
 	game
 		applyCard: redo
 		of: 'Pedro'
@@ -601,7 +597,7 @@ GameTest >> testRepeat [
 		on: board.
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 10.
-	game applyCard: repeat of: 'Pedro'.
+	repeat applyUsing: game.
 	self assert: (game positionOf: 'Pedro') equals: 14
 ]
 
@@ -622,7 +618,7 @@ GameTest >> testSpeed [
 		until: endPosition
 		andLap: 2
 		on: board.
-	game applyPermanent: speed on: 'Juan'.
+	speed applyUsing: game on: 'Juan'.
 	game playATurn.
 	game playATurn.
 	self assert: (game positionOf: 'Juan') equals: 7

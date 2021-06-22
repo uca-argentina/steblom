@@ -4,6 +4,16 @@ Class {
 	#category : #'IngSoft2-Model'
 }
 
+{ #category : #'applying card' }
+Speed >> applyCancellation: cancellation onPlayer: player using: game [
+	game applyCancellation: cancellation onCard: self of: player
+]
+
+{ #category : #'applying card' }
+Speed >> applyUsing: game on: player [
+	game applyPermanent: self on: player
+]
+
 { #category : #accessing }
 Speed >> effect [
 	^ 1

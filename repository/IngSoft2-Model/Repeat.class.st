@@ -6,5 +6,10 @@ Class {
 
 { #category : #apllying }
 Repeat >> applyRedoOn: card of: player using: game [ 
-	game applyRepeat.
+	game applyRepeat: card.
+]
+
+{ #category : #'applying card' }
+Repeat >> applyUsing: game [ 
+	game applyRepeat: self.
 ]

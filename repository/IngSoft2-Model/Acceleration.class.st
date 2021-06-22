@@ -4,6 +4,11 @@ Class {
 	#category : #'IngSoft2-Model'
 }
 
+{ #category : #cancelling }
+Acceleration >> applyCancellation: cancellation using: game [
+	game applyCancellation: cancellation onCard: self
+]
+
 { #category : #'applying card' }
 Acceleration >> applyUsing: game [
 	game applyOnAll:self.
@@ -12,9 +17,4 @@ Acceleration >> applyUsing: game [
 { #category : #accessing }
 Acceleration >> effect [
 	^ 1
-]
-
-{ #category : #removing }
-Acceleration >> removeYourselfOf: player using: game [ 
-	game remove: self.
 ]
