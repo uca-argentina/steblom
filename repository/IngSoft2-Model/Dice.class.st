@@ -9,7 +9,6 @@ Class {
 
 { #category : #'instance creation' }
 Dice class >> withAll: aDiceSet [
-	
 	^ self new initializeWithAll: aDiceSet
 ]
 

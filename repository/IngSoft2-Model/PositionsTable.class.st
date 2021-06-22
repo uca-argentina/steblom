@@ -23,13 +23,14 @@ PositionsTable >> arePositionsGreaterThan: finalLap [
 { #category : #initialization }
 PositionsTable >> initializeWithPlayers: aSetOfPlayers [
 	positions := OrderedCollection new.
-	aSetOfPlayers do: [ :player | positions add: (Position for: player) ]
+	positions := aSetOfPlayers
+		collect: [ :player | Position for: player ]
 ]
 
 { #category : #accessing }
 PositionsTable >> move: player backward: numberOfTiles with: endPosition [
 	positions
-		detect: [ :position | position areYou: player ]
+		detect: [ :position | position areYouFrom: player ]
 		ifFound: [ :position | position backward: numberOfTiles with: endPosition ]
 		ifNone: [ Error signal: 'Player not found.' ]
 ]
@@ -37,7 +38,7 @@ PositionsTable >> move: player backward: numberOfTiles with: endPosition [
 { #category : #accessing }
 PositionsTable >> move: player forward: numberOfTiles with: endPosition [
 	positions
-		detect: [ :position | position areYou: player ]
+		detect: [ :position | position areYouFrom: player ]
 		ifFound: [ :position | position forward: numberOfTiles with: endPosition ]
 		ifNone: [ Error signal: 'Player not found.' ]
 ]
@@ -46,7 +47,7 @@ PositionsTable >> move: player forward: numberOfTiles with: endPosition [
 PositionsTable >> moveEveryoneExcept: player backward: numberOfTiles with: endPosition [
 	positions
 		do: [ :position | 
-			(position areYou: player)
+			(position areYouFrom: player)
 				ifFalse: [ position backward: numberOfTiles with: endPosition ] ]
 ]
 
@@ -54,7 +55,7 @@ PositionsTable >> moveEveryoneExcept: player backward: numberOfTiles with: endPo
 PositionsTable >> playerPositions [
 	| auxPositions sortedPlayers |
 	auxPositions := SortedCollection new.
-	auxPositions sort: [ :a :b | a sumPosition > b sumPosition ].
+	auxPositions sort: [ :a :b | a > b ].
 	positions do: [ :position | auxPositions add: position ].
 	sortedPlayers := OrderedCollection new.
 	auxPositions do: [ :position | sortedPlayers add: position owner ].
@@ -62,16 +63,16 @@ PositionsTable >> playerPositions [
 ]
 
 { #category : #accessing }
-PositionsTable >> sendAllPlayersToBeginning [
-	positions do: [ :position | position goToBeginning ]
+PositionsTable >> positionOf: player [
+	positions
+		detect: [ :position | position areYouFrom: player ]
+		ifFound: [ :position | ^ position whereAreYou ]
+		ifNone: [ Error signal: 'Player not found.' ]
 ]
 
 { #category : #accessing }
-PositionsTable >> whatIsThePositionOf:player [
-	positions
-		detect: [ :position | position areYou: player ]
-		ifFound: [ :position | ^position whereAreYou  ]
-		ifNone: [ Error signal: 'Player not found.' ]
+PositionsTable >> sendAllPlayersToBeginning [
+	positions do: [ :position | position goToBeginning ]
 ]
 
 { #category : #'as yet unclassified' }

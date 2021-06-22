@@ -31,7 +31,7 @@ HandsTable >> applyOnAll: acceleration [
 { #category : #'applying card' }
 HandsTable >> applyPermanent: card on: player [
 	hands
-		detect: [ :hand | hand areYou: player ]
+		detect: [ :hand | hand areYouFrom: player ]
 		ifFound: [ :hand | hand apply: card ]
 		ifNone: [ Error signal: 'Player does not exist' ]
 ]
@@ -39,7 +39,7 @@ HandsTable >> applyPermanent: card on: player [
 { #category : #testing }
 HandsTable >> assert: player has: card [
 	hands
-		detect: [ :hand | hand areYou: player ]
+		detect: [ :hand | hand areYouFrom: player ]
 		ifFound: [ :hand | hand doYouOwn: card ]
 		ifNone: [ Error signal: 'Player does not exist' ]
 ]
@@ -47,20 +47,15 @@ HandsTable >> assert: player has: card [
 { #category : #testing }
 HandsTable >> assert: card isAppliedTo: player [
 		hands
-		detect: [ :hand | hand areYou: player ]
+		detect: [ :hand | hand areYouFrom: player ]
 		ifFound: [ :hand | hand areYouApplied: card ]
 		ifNone: [ Error signal: 'Player does not exist' ]
-]
-
-{ #category : #testing }
-HandsTable >> assertAccelerationIsApplied [
-	self shouldBeImplemented.
 ]
 
 { #category : #accessing }
 HandsTable >> cardsEffectFor: player [
 	hands
-		detect: [ :hand | hand areYou: player ]
+		detect: [ :hand | hand areYouFrom: player ]
 		ifFound: [ :hand | ^ hand cardsEffect ]
 		ifNone: [ Error signal: 'Player does not exist' ]
 ]
@@ -76,7 +71,7 @@ HandsTable >> count: aClass [
 { #category : #accessing }
 HandsTable >> giveCardTo: player with: cards [
 	hands
-		detect: [ :hand | hand areYou: player ]
+		detect: [ :hand | hand areYouFrom: player ]
 		ifFound: [ :hand | 
 			hand give: cards current.
 			cards next ]
@@ -86,7 +81,7 @@ HandsTable >> giveCardTo: player with: cards [
 { #category : #accessing }
 HandsTable >> giveRandomCardTo: player with: cards [
 	hands
-		detect: [ :hand | hand areYou: player ]
+		detect: [ :hand | hand areYouFrom: player ]
 		ifFound: [ :hand | hand give: (Hand randomCardFrom: cards) ]
 		ifNone: [ Error signal:'Player does not exist' ]
 ]
@@ -104,7 +99,7 @@ HandsTable >> remove: acceleration [
 { #category : #removing }
 HandsTable >> remove: card from: player [ 
 	hands
-		detect: [ :hand | hand areYou: player ]
+		detect: [ :hand | hand areYouFrom: player ]
 		ifFound: [ :hand | hand removeOwned: card ]
 		ifNone: [ Error signal: 'Player does not exist' ]
 ]
@@ -112,14 +107,14 @@ HandsTable >> remove: card from: player [
 { #category : #removing }
 HandsTable >> remove: card to: player [
 	hands
-		detect: [ :hand | hand areYou: player ]
+		detect: [ :hand | hand areYouFrom: player ]
 		ifFound: [ :hand | hand remove: card ]
 		ifNone: [ Error signal: 'Player does not exist' ]
 ]
 
 { #category : #removing }
 HandsTable >> removeCardsFrom: player [
-	hands detect:[ :hand | hand areYou:player]
+	hands detect:[ :hand | hand areYouFrom:player]
 	ifFound: [ :hand | hand removeAllCards ]
 	ifNone: [ Error signal: 'Player does not exist' ]
 ]

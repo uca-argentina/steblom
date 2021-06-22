@@ -36,11 +36,11 @@ Game class >> playedBy: players rolling: aDie playing: cards until: endPosition 
 	^ self new
 		initializePlayedBy: players
 		rolling: aDie
-		playing: (CircularIterator cyclingOver:cards)
+		playing: (CircularIterator cyclingOver: cards)
 		until: endPosition
 		and: finalLap
 		on: aBoard
-		storedOn: (HandsTable with: players and: (CircularIterator cyclingOver:cards))
+		storedOn: (HandsTable with: players and: (CircularIterator cyclingOver: cards))
 ]
 
 { #category : #'instance creation' }
@@ -54,7 +54,7 @@ Game class >> playedBy: players rolling: aDie playingRandom: cards until: endPos
 		until: endPosition
 		and: finalLap
 		on: aBoard
-		storedOn: (HandsTable generateRandomWith: players and: cards )
+		storedOn: (HandsTable generateRandomWith: players and: cards)
 ]
 
 { #category : #'applying effect' }
@@ -65,9 +65,10 @@ Game >> applyAtomicBomb [
 
 { #category : #'applying card' }
 Game >> applyCard: repeat of: player [ 
+	| game |
 	handsTable assert: player has: repeat.
-	self assertLastEffectNotNil.
-	lastEffect applyTo: lastPlayer using: self.
+	game := self.
+	lastEffect ifNotNil:[lastEffect applyTo: lastPlayer using: game].
 	lastCard := repeat.
 ]
 
@@ -109,7 +110,8 @@ Game >> applyMoonwalkToEveryoneExcept: player with: n [
 { #category : #'applying card' }
 Game >> applyOnAll: acceleration [
 	handsTable assert: players current has: acceleration.
-	handsTable applyOnAll: acceleration
+	handsTable applyOnAll: acceleration.
+	handsTable remove: acceleration from: players current
 ]
 
 { #category : #'applying card' }
@@ -126,9 +128,9 @@ Game >> applyRandomCroupierTo: player [
 
 { #category : #'applying card' }
 Game >> applyRepeat [
-	self assertLastEffectNotNil.
-	lastEffect applyTo: lastPlayer using: self.
-	
+	| game |
+	game := self.
+	lastEffect ifNotNil: [ lastEffect applyTo: lastPlayer using: game ]
 ]
 
 { #category : #'applying effect' }
@@ -143,12 +145,6 @@ Game >> applyWormHoleTo: player [
 	lastEffect := WormHole new.
 	lastPlayer := player.
 	positionsTable move:player backward:4 with:endPosition
-]
-
-{ #category : #testing }
-Game >> assertLastEffectNotNil [
-	lastEffect ~= nil
-		ifFalse: [ Error signal: 'Cannot use repeat before someone rolls die' ]
 ]
 
 { #category : #accessing }
@@ -186,7 +182,7 @@ Game >> playATurn [
 		move: players current
 		forward: die roll + (handsTable cardsEffectFor: players current)
 		with: endPosition.
-	(board effect: (positionsTable whatIsThePositionOf: players current))
+	(board effectAt: (positionsTable positionOf: players current))
 		applyTo: players current
 		using: self.
 	players next
@@ -199,7 +195,7 @@ Game >> playerPositions [
 
 { #category : #accessing }
 Game >> positionOf: player [
-	^ positionsTable whatIsThePositionOf: player
+	^ positionsTable positionOf: player
 ]
 
 { #category : #removing }

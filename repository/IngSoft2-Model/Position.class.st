@@ -3,8 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'owner',
-		'position',
-		'lap'
+		'lap',
+		'tile'
 	],
 	#category : #'IngSoft2-Model'
 }
@@ -14,42 +14,56 @@ Position class >> for: player [
 	^self new initializeFor:player.
 ]
 
+{ #category : #comparing }
+Position >> > aPosition [
+	self lap > aPosition lap
+		ifTrue: [ ^ true ]
+		ifFalse: [ self lap == aPosition lap
+				ifTrue: [ ^ tile > aPosition tile ]
+				ifFalse: [ ^ false ] ]
+]
+
 { #category : #testing }
-Position >> areYou: player [
+Position >> areYouFrom: player [
 	^ player = owner
 ]
 
 { #category : #accessing }
 Position >> backward: numberOfTiles with: endPosition [
-	position - numberOfTiles < 1
+	tile - numberOfTiles < 1
 		ifTrue: [ lap := lap - 1.
-			position := endPosition + position - numberOfTiles ]
-		ifFalse: [ position := position - numberOfTiles ]
+			tile := endPosition + tile - numberOfTiles ]
+		ifFalse: [ tile := tile - numberOfTiles ]
 ]
 
 { #category : #accessing }
 Position >> forward: numberOfTiles with: endPosition [
-	position + numberOfTiles > endPosition
-		ifTrue: [ position := position + numberOfTiles - endPosition.
+	tile + numberOfTiles > endPosition
+		ifTrue: [ tile := tile + numberOfTiles - endPosition.
 			lap := lap + 1 ]
-		ifFalse: [ position := position + numberOfTiles ]
+		ifFalse: [ tile := tile + numberOfTiles ]
 ]
 
 { #category : #accessing }
 Position >> goToBeginning [
-	position:=1
+	tile:=1
 ]
 
 { #category : #initialization }
 Position >> initializeFor: player [
 	owner := player.
-	position := 1.
+	tile := 1.
 	lap := 1
 ]
 
 { #category : #testing }
 Position >> isYourLapGreaterThan: finalLap [
 	^ lap > finalLap
+]
+
+{ #category : #getter }
+Position >> lap [
+	^ lap
 ]
 
 { #category : #accessing }
@@ -59,10 +73,15 @@ Position >> owner [
 
 { #category : #accessing }
 Position >> sumPosition [
-	^ lap + position
+	^ lap + tile
+]
+
+{ #category : #getter }
+Position >> tile [
+	^ tile
 ]
 
 { #category : #accessing }
 Position >> whereAreYou [
-	^ position
+	^ tile
 ]

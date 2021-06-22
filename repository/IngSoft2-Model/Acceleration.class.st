@@ -4,6 +4,11 @@ Class {
 	#category : #'IngSoft2-Model'
 }
 
+{ #category : #'applying card' }
+Acceleration >> applyUsing: game [
+	game applyOnAll:self.
+]
+
 { #category : #accessing }
 Acceleration >> effect [
 	^ 1

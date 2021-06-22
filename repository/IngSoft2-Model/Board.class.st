@@ -21,7 +21,9 @@ Board class >> generateWith: effects sized: endPosition [
 	| tiles effectsIterator |
 	effectsIterator := CircularIterator cyclingOver: effects.
 	tiles := OrderedCollection new.
-	1 to: endPosition do: [ :i | tiles add: effectsIterator current . effectsIterator next.].
+	1 to: endPosition do: [ :i | 
+		tiles add: effectsIterator current.
+		effectsIterator next ].
 	^ Board new initializeWith: tiles
 ]
 
@@ -31,9 +33,9 @@ Board class >> with: effects and: proportions sized: size [
 	auxBoard := OrderedCollection new.
 	effects
 		with: proportions
-		do: [ :effect :proportion | 1 to: proportion do: [ :i |auxBoard add: effect ] ].
-	^self generateRandomUsing: auxBoard sized: size.
-	
+		do:
+			[ :effect :proportion | 1 to: proportion do: [ :i | auxBoard add: effect ] ].
+	^ self generateRandomUsing: auxBoard sized: size
 ]
 
 { #category : #accessing }
@@ -42,8 +44,8 @@ Board >> count: effect [
 ]
 
 { #category : #accessing }
-Board >> effect: position [
-	^tiles at:position
+Board >> effectAt: position [
+	^ tiles at: position
 ]
 
 { #category : #initialization }

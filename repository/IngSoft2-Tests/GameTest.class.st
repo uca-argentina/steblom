@@ -21,7 +21,7 @@ GameTest >> testAcceleration [
 		until: endPosition
 		andLap: 2
 		on: board.
-	game applyOnAll: acceleration.
+	acceleration applyUsing:game.
 	game playATurn.
 	game playATurn.
 	game playATurn.
@@ -84,7 +84,7 @@ GameTest >> testCancellationOnAcceleration [
 	effects := {NoEffect new}.
 	board := Board generateWith: effects sized: endPosition.
 	acceleration := Acceleration new.
-	cancellation := Cancellation new.
+	cancellation := Acceleration new.
 	cards := {acceleration.
 	cancellation}.
 	game := Game
@@ -466,7 +466,7 @@ GameTest >> testRandomCardsDelivery [
 
 { #category : #tests }
 GameTest >> testRandomCroupier [
-	| handsTable players cards overloadCounter speedCounter cancellationCounter accelerationCounter repeatCounter effects endPosition board die game overload speed |
+	| players cards overloadCounter speedCounter cancellationCounter accelerationCounter repeatCounter effects endPosition board die game overload speed |
 	die := Die of: 6 rolling: #(5 5 6).
 	endPosition := 10.
 	overloadCounter := 0.
@@ -491,7 +491,7 @@ GameTest >> testRandomCroupier [
 		until: endPosition
 		andLap: 2
 		on: board.
-	game removeCardsFrom:'Jorge'.
+	game removeCardsFrom: 'Jorge'.
 	100000 timesRepeat: [ game applyRandomCroupierTo: 'Jorge' ].
 	overloadCounter := game count: Overload.
 	speedCounter := game count: Speed.

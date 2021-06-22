@@ -42,16 +42,16 @@ Hand >> apply: card [
 	
 ]
 
-{ #category : #accessing }
-Hand >> areYou: player [
-	^ player = owner
-]
-
 { #category : #testing }
 Hand >> areYouApplied: aCard [
 	appliedCards
 		detect: [ :card | card = aCard ]
 		ifNone: [ Error signal: 'Player is not applied that card' ]
+]
+
+{ #category : #accessing }
+Hand >> areYouFrom: player [
+	^ player = owner
 ]
 
 { #category : #accessing }
@@ -84,11 +84,6 @@ Hand >> doYouOwn: aCard [
 { #category : #accessing }
 Hand >> give: card [
 	ownedCards add: card
-]
-
-{ #category : #accessing }
-Hand >> give: anOverload to: aString [ 
-	self shouldBeImplemented.
 ]
 
 { #category : #initialization }
