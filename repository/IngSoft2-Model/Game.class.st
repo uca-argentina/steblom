@@ -57,6 +57,11 @@ Game class >> playedBy: players rolling: aDie playingRandom: cards until: endPos
 		storedOn: (HandsTable generateRandomWith: players and: cards)
 ]
 
+{ #category : #'applying card' }
+Game >> applyAccelerationWithRedo: acceleration [ 
+	handsTable applyOnAll: acceleration.
+]
+
 { #category : #'applying effect' }
 Game >> applyAtomicBomb [
 	lastEffect := AtomicBomb new.
@@ -79,6 +84,12 @@ Game >> applyCancellation: cancellation onCard: card of: player [
 	card removeYourselfOf: player using: self.
 	handsTable remove: cancellation from: players current.
 	lastCard := cancellation
+]
+
+{ #category : #cancelling }
+Game >> applyCancellationWithRedo: cancellation onCard: card of: player [
+	handsTable assert: card isAppliedTo: player.
+	card removeYourselfOf: player using: self
 ]
 
 { #category : #'applying card' }
@@ -104,14 +115,21 @@ Game >> applyMoonwalkToEveryoneExcept: player with: n [
 Game >> applyOnAll: acceleration [
 	handsTable assert: players current has: acceleration.
 	handsTable applyOnAll: acceleration.
-	handsTable remove: acceleration from: players current
+	handsTable remove: acceleration from: players current.
+	lastCard := acceleration
 ]
 
 { #category : #'applying card' }
 Game >> applyPermanent: card on: player [
 	handsTable assert: players current has: card.
 	handsTable applyPermanent: card on: player.
-	handsTable remove: card from: players current
+	handsTable remove: card from: players current.
+	lastCard := card
+]
+
+{ #category : #'applying card' }
+Game >> applyPermanentWithRedo: card onPlayer: player [ 
+	handsTable applyPermanent: card on: player.
 ]
 
 { #category : #'applying effect' }
@@ -126,6 +144,13 @@ Game >> applyRepeat: repeat [
 	game := self.
 	lastEffect ifNotNil:[lastEffect applyTo: lastPlayer using: game].
 	lastCard := repeat.
+]
+
+{ #category : #'applying card' }
+Game >> applyRepeatWithRedo: repeat [
+	| game |
+	game := self.
+	lastEffect ifNotNil: [ lastEffect applyTo: lastPlayer using: game ]
 ]
 
 { #category : #'applying effect' }
@@ -169,6 +194,11 @@ Game >> initializePlayedBy: aSetOfPlayers rolling: aDie playing: aSetOfCards unt
 	finalLap := afinalLap.
 	positionsTable := PositionsTable withPlayers: aSetOfPlayers.
 	board := aBoard
+]
+
+{ #category : #getter }
+Game >> lastCard [
+	^ lastCard
 ]
 
 { #category : #playing }

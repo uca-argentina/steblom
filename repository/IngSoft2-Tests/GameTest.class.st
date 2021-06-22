@@ -513,6 +513,31 @@ GameTest >> testRandomCroupier [
 ]
 
 { #category : #tests }
+GameTest >> testRedoOnAcceleration [
+	| game players die board endPosition effects cards redo acceleration |
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 30.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	redo := Redo new.
+	acceleration := Acceleration new.
+	cards := {acceleration.
+	redo}.
+	game := Game
+		playedBy: players
+		rolling: die
+		playing: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	acceleration applyUsing: game.
+	redo applyUsing: game onCard:nil onPlayer:'Pedro'.
+	game playATurn.
+	self assert: (game positionOf: 'Pedro') equals: 8
+]
+
+{ #category : #tests }
 GameTest >> testRedoOnCancellation [
 	| game players die board endPosition effects cards redo speed cancellation |
 	die := Die of: 6 rolling: #(5 5 6).
@@ -538,15 +563,36 @@ GameTest >> testRedoOnCancellation [
 	self assert: (game positionOf: 'Pedro') equals: 7.
 	game applyPermanent: speed on: 'Juan'.
 	cancellation applyUsing: game onCard: speed onPlayer:'Pedro'.
-	game
-		applyCard: redo
-		of: 'Pedro'
-		on: speed
-		of: 'Juan'.
+	redo applyUsing: game onCard: speed onPlayer:'Juan'.
 	game playATurn.
 	game playATurn.
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 12
+]
+
+{ #category : #tests }
+GameTest >> testRedoOnOverload [
+	| game players die board endPosition effects cards redo overload |
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 30.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	redo := Redo new.
+	overload := Overload new.
+	cards := {overload.
+	redo}.
+	game := Game
+		playedBy: players
+		rolling: die
+		playing: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	overload applyUsing: game on: 'Pedro'.
+	redo applyUsing: game onCard:nil onPlayer:'Pedro'.
+	game playATurn.
+	self assert: (game positionOf: 'Pedro') equals: 2
 ]
 
 { #category : #tests }
@@ -570,12 +616,33 @@ GameTest >> testRedoOnRepeat [
 		on: board.
 	game playATurn.
 	repeat applyUsing: game.
-	game
-		applyCard: redo
-		of: 'Pedro'
-		on: repeat
-		of: 'Pedro'.
+	redo applyUsing: game onCard:nil onPlayer:nil. 
 	self assert: (game positionOf: 'Pedro') equals: 18
+]
+
+{ #category : #tests }
+GameTest >> testRedoOnSpeed [
+	| game players die board endPosition effects cards redo speed |
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 30.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	redo := Redo new.
+	speed := Speed new.
+	cards := {speed.
+	redo}.
+	game := Game
+		playedBy: players
+		rolling: die
+		playing: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	speed applyUsing: game on: 'Pedro'.
+	redo applyUsing: game onCard:nil onPlayer:'Pedro'.
+	game playATurn.
+	self assert: (game positionOf: 'Pedro') equals: 8
 ]
 
 { #category : #tests }
