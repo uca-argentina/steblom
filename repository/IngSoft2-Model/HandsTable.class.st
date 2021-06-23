@@ -91,6 +91,14 @@ HandsTable >> initializeWith: aSetOfHands [
 	hands := aSetOfHands
 ]
 
+{ #category : #getter }
+HandsTable >> randomCardFrom: player [  
+		hands
+		detect: [ :hand | hand areYouFrom: player ]
+		ifFound: [ :hand | ^hand randomCard ]
+		ifNone: [ Error signal:'Player does not exist' ]
+]
+
 { #category : #removing }
 HandsTable >> remove: acceleration [ 
 	hands do:[:hand | hand remove:acceleration]

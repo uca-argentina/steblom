@@ -303,6 +303,44 @@ GameTest >> testGameCanEnd [
 ]
 
 { #category : #tests }
+GameTest >> testGameFull [
+	| players cards effects endPosition board die game overload speed proportions acceleration cancellation repeat |
+	die := Die of: 6.
+	endPosition := 20.
+	players := {'Jorge' . 'Pedro' . 'Joaco'}.
+	effects := { NoEffect new.
+	SpeedUp new.
+	WormHole new.
+	MoonWalk substracting: 2.
+	AtomicBomb new.
+	Croupier new
+	}.
+	proportions := {38 . 20 . 20 . 10 . 2 . 10}.
+	board := Board with: effects and: proportions sized: endPosition.
+	overload := Overload new.
+	speed := Speed new.
+	acceleration := Acceleration new.
+	cancellation := Cancellation new.
+	repeat := Repeat new.
+	cards := {overload.
+	speed.
+	acceleration.
+	cancellation.
+	repeat}.
+	game := Game
+		playedBy: players
+		rolling: die
+		playingRandom: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	[ game hasEnded ]
+		whileFalse: [ game playATurn.
+			game playACard ].
+	self assert: game hasEnded
+]
+
+{ #category : #tests }
 GameTest >> testMoonWalk [
 	| game players die board endPosition effects overload cards |
 	die := Die of: 6 rolling: #(5 4 6).

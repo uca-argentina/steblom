@@ -93,6 +93,14 @@ Hand >> initializeFor: player with: aSetOfCards [
 	appliedCards := OrderedCollection new
 ]
 
+{ #category : #getter }
+Hand >> randomCard [
+	| length random |
+	length:= ownedCards count: [ :i | true ].
+	random := Random new.
+	^ownedCards at: (random nextInt: length)
+]
+
 { #category : #removing }
 Hand >> remove: acceleration [ 
 	appliedCards remove: acceleration.

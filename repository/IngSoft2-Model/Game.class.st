@@ -195,6 +195,11 @@ Game >> lastCard [
 ]
 
 { #category : #playing }
+Game >> playACard [
+	(handsTable randomCardFrom: players current) applyUsing: self onCard: nil onPlayer:nil.
+]
+
+{ #category : #playing }
 Game >> playATurn [
 	positionsTable
 		move: players current
