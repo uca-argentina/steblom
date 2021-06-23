@@ -4,6 +4,11 @@ Class {
 	#category : #'IngSoft2-Model'
 }
 
+{ #category : #cancelling }
+Cancellation >> applyCancellation: aCancellation onPlayer: aString using: aGame [ 
+	
+]
+
 { #category : #redoing }
 Cancellation >> applyRedo: redo onCard: card onPlayer: player using: game [ 
 	game applyCancellationWithRedo: self onCard:card of:player.

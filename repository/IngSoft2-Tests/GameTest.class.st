@@ -304,7 +304,7 @@ GameTest >> testGameCanEnd [
 
 { #category : #tests }
 GameTest >> testGameFull [
-	| players cards effects endPosition board die game overload speed proportions acceleration cancellation repeat |
+	| players cards effects endPosition board die game overload speed proportions acceleration repeat |
 	die := Die of: 6.
 	endPosition := 20.
 	players := {'Jorge' . 'Pedro' . 'Joaco'}.
@@ -320,12 +320,10 @@ GameTest >> testGameFull [
 	overload := Overload new.
 	speed := Speed new.
 	acceleration := Acceleration new.
-	cancellation := Cancellation new.
 	repeat := Repeat new.
 	cards := {overload.
 	speed.
 	acceleration.
-	cancellation.
 	repeat}.
 	game := Game
 		playedBy: players
@@ -359,8 +357,8 @@ GameTest >> testMoonWalk [
 		on: board.
 	game playATurn.
 	self assert: (game positionOf:'Pedro') equals:6.
-	self assert: (game positionOf:'Juan') equals:9.
-	self assert: (game positionOf:'Jorge') equals:9.
+	self assert: (game positionOf:'Juan') equals:1.
+	self assert: (game positionOf:'Jorge') equals:1.
 ]
 
 { #category : #tests }

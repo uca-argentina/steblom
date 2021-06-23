@@ -31,8 +31,7 @@ Position >> areYouFrom: player [
 { #category : #accessing }
 Position >> backward: numberOfTiles with: endPosition [
 	tile - numberOfTiles < 1
-		ifTrue: [ lap := lap - 1.
-			tile := endPosition + tile - numberOfTiles ]
+		ifTrue: [ tile := 1 ]
 		ifFalse: [ tile := tile - numberOfTiles ]
 ]
 
@@ -41,7 +40,8 @@ Position >> forward: numberOfTiles with: endPosition [
 	tile + numberOfTiles > endPosition
 		ifTrue: [ tile := tile + numberOfTiles - endPosition.
 			lap := lap + 1 ]
-		ifFalse: [ tile := tile + numberOfTiles ]
+		ifFalse: [ tile := tile + numberOfTiles ].
+	
 ]
 
 { #category : #accessing }

@@ -19,6 +19,11 @@ Acceleration >> applyUsing: game [
 	game applyOnAll:self.
 ]
 
+{ #category : #'applying card' }
+Acceleration >> applyUsing: game onCard: card onPlayer: player [
+	self applyUsing: game
+]
+
 { #category : #accessing }
 Acceleration >> effect [
 	^ 1

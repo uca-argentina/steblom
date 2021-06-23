@@ -36,7 +36,7 @@ Game class >> playedBy: players rolling: aDie playing: cards until: endPosition 
 	^ self new
 		initializePlayedBy: players
 		rolling: aDie
-		playing: (CircularIterator cyclingOver: cards)
+		playing: cards
 		until: endPosition
 		and: finalLap
 		on: aBoard
@@ -196,7 +196,12 @@ Game >> lastCard [
 
 { #category : #playing }
 Game >> playACard [
-	(handsTable randomCardFrom: players current) applyUsing: self onCard: nil onPlayer:nil.
+	(handsTable gotCardsInHand: players current)
+		ifTrue: [ (handsTable randomCardFrom: players current)
+				applyUsing: self
+				onCard: lastCard
+				onPlayer: players current ]
+		
 ]
 
 { #category : #playing }

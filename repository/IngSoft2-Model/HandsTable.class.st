@@ -72,9 +72,7 @@ HandsTable >> count: aClass [
 HandsTable >> giveCardTo: player with: cards [
 	hands
 		detect: [ :hand | hand areYouFrom: player ]
-		ifFound: [ :hand | 
-			hand give: cards current.
-			cards next ]
+		ifFound: [ :hand | hand give: (Hand randomCardFrom: cards) ]
 		ifNone: [ Error signal: 'Player does not exist' ]
 ]
 
@@ -83,6 +81,14 @@ HandsTable >> giveRandomCardTo: player with: cards [
 	hands
 		detect: [ :hand | hand areYouFrom: player ]
 		ifFound: [ :hand | hand give: (Hand randomCardFrom: cards) ]
+		ifNone: [ Error signal:'Player does not exist' ]
+]
+
+{ #category : #assertion }
+HandsTable >> gotCardsInHand: player [ 
+	hands
+		detect: [ :hand | hand areYouFrom: player ]
+		ifFound: [ :hand | ^hand gotCards ]
 		ifNone: [ Error signal:'Player does not exist' ]
 ]
 

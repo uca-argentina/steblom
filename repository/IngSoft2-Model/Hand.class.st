@@ -86,6 +86,13 @@ Hand >> give: card [
 	ownedCards add: card
 ]
 
+{ #category : #assertion }
+Hand >> gotCards [
+	| length  |
+	length:= ownedCards count: [ :i | true ].
+	^length >0
+]
+
 { #category : #initialization }
 Hand >> initializeFor: player with: aSetOfCards [
 	owner := player.

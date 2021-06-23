@@ -19,6 +19,11 @@ Overload >> applyUsing: game on: player [
 	game applyPermanent: self on: player. 
 ]
 
+{ #category : #'applying card' }
+Overload >> applyUsing: game onCard: card onPlayer: player [
+	self applyUsing: game on: player 
+]
+
 { #category : #accessing }
 Overload >> effect [
 	^ -2

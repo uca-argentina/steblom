@@ -19,6 +19,11 @@ Speed >> applyUsing: game on: player [
 	game applyPermanent: self on: player
 ]
 
+{ #category : #'applying card' }
+Speed >> applyUsing: game onCard: card onPlayer: player [
+	self applyUsing: game on: player 
+]
+
 { #category : #accessing }
 Speed >> effect [
 	^ 1
