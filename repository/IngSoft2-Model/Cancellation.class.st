@@ -9,11 +9,6 @@ Cancellation >> applyRedo: redo onCard: card onPlayer: player using: game [
 	game applyCancellationWithRedo: self onCard:card of:player.
 ]
 
-{ #category : #applying }
-Cancellation >> applyRedoOn: card of: player using: game [ 
-	card removeYourselfOf:player using: game
-]
-
 { #category : #'applying card' }
 Cancellation >> applyUsing: game onCard: card [  
 	card applyCancellation:self using:game.

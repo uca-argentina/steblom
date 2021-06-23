@@ -23,3 +23,8 @@ Acceleration >> applyUsing: game [
 Acceleration >> effect [
 	^ 1
 ]
+
+{ #category : #redoing }
+Acceleration >> removeYourselfOfUsing: game [
+	game remove: self.
+]
