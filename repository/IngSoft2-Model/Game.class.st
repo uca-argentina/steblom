@@ -97,6 +97,14 @@ Game >> applyCroupierTo: player [
 	handsTable giveCardTo: player with: cards
 ]
 
+{ #category : #'applying card' }
+Game >> applyDouble: double [ 
+	handsTable assert: players current has: double.
+	handsTable remove: double from: players current.
+	self playATurn.
+	((players getOptions) size-1)timesRepeat: [ players next ]
+]
+
 { #category : #'applying effect' }
 Game >> applyMoonwalkToEveryoneExcept: player with: n [
 	lastEffect := MoonWalk substracting: n.
@@ -144,6 +152,27 @@ Game >> applyRepeatWithRedo: repeat [
 	| game |
 	game := self.
 	lastEffect ifNotNil: [ lastEffect applyTo: lastPlayer using: game ]
+]
+
+{ #category : #'applying card' }
+Game >> applyReverse: reverse [ 
+	| aux aux2 cont auxPlayer a |
+	handsTable assert: players current has: reverse.
+	handsTable remove: reverse from: players current.
+	auxPlayer := players current.
+	aux := players getOptions.
+	aux2 := OrderedCollection new.
+	cont := aux size.
+	[ cont > 0 ] whileTrue: [ aux2 add: (aux at:cont). ((aux at:cont)=auxPlayer) ifTrue: [ a := cont ]. cont:=cont-1 ].
+	players := CircularIterator cyclingOver: aux2.
+	(a-1) timesRepeat: [ players next ]
+]
+
+{ #category : #'applying card' }
+Game >> applySkip: skip of: player [ 
+	handsTable assert: player has: skip.
+	handsTable remove: skip from: player.
+	players next.
 ]
 
 { #category : #'applying effect' }

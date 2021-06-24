@@ -187,6 +187,31 @@ GameTest >> testCroupier [
 ]
 
 { #category : #tests }
+GameTest >> testDouble [
+	| game players die board endPosition effects cards double |
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge' 'Gonza').
+	endPosition := 10.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	double := Double new.
+	cards := {double}.
+	game := Game
+		playedBy: players
+		rolling: die
+		playing: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	double applyUsing: game on: nil.
+	game playATurn.
+	game playATurn.
+	self assert: (game positionOf: 'Pedro') equals: 1.
+	self assert: (game positionOf: 'Juan') equals: 7.
+	self assert: (game positionOf: 'Jorge') equals: 1
+]
+
+{ #category : #tests }
 GameTest >> testEndPositionCantBeNegative [
 	| players die endPosition effects board overload cards |
 	die := Die of: 6 rolling: #(4 4 6).
@@ -702,6 +727,59 @@ GameTest >> testRepeat [
 	self assert: (game positionOf: 'Pedro') equals: 10.
 	repeat applyUsing: game.
 	self assert: (game positionOf: 'Pedro') equals: 14
+]
+
+{ #category : #tests }
+GameTest >> testReverse [
+	| game players die board endPosition effects cards reverse |
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 10.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	reverse := Reverse new.
+	cards := {reverse}.
+	game := Game
+		playedBy: players
+		rolling: die
+		playing: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	game playATurn.
+	self assert: (game positionOf: 'Pedro') equals: 6.
+	reverse applyUsing: game on: nil.
+	game playATurn.
+	self assert: (game positionOf: 'Juan') equals: 6.
+	game playATurn.
+	self assert: (game positionOf: 'Pedro') equals: 2.
+	game playATurn.
+	self assert: (game positionOf: 'Jorge') equals: 6.
+]
+
+{ #category : #tests }
+GameTest >> testSkip [
+	| game players die board endPosition effects cards skip |
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 10.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	skip := Skip new.
+	cards := {skip}.
+	game := Game
+		playedBy: players
+		rolling: die
+		playing: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	skip applyUsing: game on: 'Juan'.
+	game playATurn.
+	game playATurn.
+	self assert: (game positionOf: 'Pedro') equals: 1.
+	self assert: (game positionOf: 'Juan') equals: 6.
+	
 ]
 
 { #category : #tests }
