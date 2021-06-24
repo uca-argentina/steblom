@@ -161,6 +161,125 @@ GameTest >> testCancellationOnSpeed [
 ]
 
 { #category : #tests }
+GameTest >> testCardDeckActualSizeChanges [
+	| players cards die endPosition effects board game |
+	cards := {Overload new.
+	Speed new.
+	Acceleration new.
+	Cancellation new.
+	Repeat new}.
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 10.
+	effects := {Croupier new}.
+	board := Board generateWith: effects sized: endPosition.
+	game := Game
+		playedBy: players
+		rolling: die
+		playingRandom: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	self assert: game cardDeck actualSize equals: 4.
+	game playATurn.
+	self assert: game cardDeck actualSize equals: 3.
+	
+]
+
+{ #category : #tests }
+GameTest >> testCardDeckHasCards [
+	| players cards die endPosition effects board game |
+	players := {'Jorge' . 'Pedro'}.
+	cards := {Overload new.
+	Speed new.
+	Acceleration new.
+	Cancellation new.
+	Repeat new}.
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 10.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	game := Game
+		playedBy: players
+		rolling: die
+		playingRandom: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	self assert: ((game cardDeck) actualSize)>0
+
+]
+
+{ #category : #tests }
+GameTest >> testCardDeckIsShuffledWhenEmpty [
+	| players cards die endPosition effects board game |
+	cards := {Overload new.
+	Speed new.
+	Acceleration new.
+	Repeat new}.
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 10.
+	effects := {Croupier new}.
+	board := Board generateWith: effects sized: endPosition.
+	game := Game
+		playedBy: players
+		rolling: die
+		playingRandom: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	game playATurn.
+	game playACard.
+	self assert: game cardDeck actualSize equals: 3.
+	game playATurn.
+	game playACard.
+	self assert: game cardDeck actualSize equals: 2.
+	game playATurn.
+	game playACard.
+	self assert: game cardDeck actualSize equals: 1.
+	game playATurn.
+	game playACard.
+	self assert: game cardDeck actualSize equals: 0.
+	self assert: game discardDeck actualSize equals: 4.
+	game playATurn.
+	self assert: game cardDeck actualSize equals: 4
+]
+
+{ #category : #tests }
+GameTest >> testCardsCannotBeGivenIfDecksEmpty [
+	| players cards die endPosition effects board game |
+	cards := {Overload new.
+	Speed new.
+	Acceleration new.
+	Repeat new}.
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 10.
+	effects := {Croupier new}.
+	board := Board generateWith: effects sized: endPosition.
+	game := Game
+		playedBy: players
+		rolling: die
+		playingRandom: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	game playATurn.
+	self assert: game cardDeck actualSize equals: 3.
+	game playATurn.
+	self assert: game cardDeck actualSize equals: 2.
+	game playATurn.
+	self assert: game cardDeck actualSize equals: 1.
+	game playATurn.
+	self assert: game cardDeck actualSize equals: 0.
+	game playATurn.
+	self assert: game cardDeck actualSize equals: 0.
+	
+]
+
+{ #category : #tests }
 GameTest >> testCroupier [
 	| game players die board endPosition effects overload cards |
 	die := Die of: 6 rolling: #(4 4 6).
@@ -188,14 +307,13 @@ GameTest >> testCroupier [
 
 { #category : #tests }
 GameTest >> testDeckHasCards [
-	| players cards proportions die endPosition effects board game |
+	| players cards die endPosition effects board game |
 	players := {'Jorge' . 'Pedro'}.
 	cards := {Overload new.
 	Speed new.
 	Acceleration new.
 	Cancellation new.
 	Repeat new}.
-	proportions := {38 . 20 . 20 . 10 . 12}.
 	die := Die of: 6 rolling: #(5 5 6).
 	players := #('Pedro' 'Juan' 'Jorge').
 	endPosition := 10.
@@ -209,6 +327,64 @@ GameTest >> testDeckHasCards [
 		andLap: 2
 		on: board.
 	self assert: ((game cardDeck) actualSize)>0
+
+]
+
+{ #category : #tests }
+GameTest >> testDiscardDeckActualSizeAddsUpWhenCardsAreUsed [
+	| players cards die endPosition effects board game |
+	players := {'Jorge' . 'Pedro'}.
+	cards := {Overload new.
+	Speed new.
+	Acceleration new.
+	Repeat new}.
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 10.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	game := Game
+		playedBy: players
+		rolling: die
+		playingRandom: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	game playATurn.
+	self assert: game discardDeck actualSize equals: 0.
+	game playACard.
+	self assert: game discardDeck actualSize equals: 1.
+	game playACard.
+	self assert: game discardDeck actualSize equals: 2.
+	game playATurn.
+	game playACard.
+	self assert: game discardDeck actualSize equals: 3.
+]
+
+{ #category : #tests }
+GameTest >> testDiscardDeckActualSizeChanges [
+	| players cards die endPosition effects board game |
+	players := {'Jorge' . 'Pedro'}.
+	cards := {Overload new.
+	Speed new.
+	Acceleration new.
+	Cancellation new.
+	Repeat new}.
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 10.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	game := Game
+		playedBy: players
+		rolling: die
+		playingRandom: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	game playATurn.
+	game playACard.
+	self assert: ((game discardDeck) actualSize)>0
 
 ]
 

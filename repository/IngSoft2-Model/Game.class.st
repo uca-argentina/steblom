@@ -195,6 +195,11 @@ Game >> count: aClass [
 	^ handsTable count: aClass
 ]
 
+{ #category : #getter }
+Game >> discardDeck [
+	^ discardDeck
+]
+
 { #category : #accessing }
 Game >> finalPositions [
 	self hasEnded
