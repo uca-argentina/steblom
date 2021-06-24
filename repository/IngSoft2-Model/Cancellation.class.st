@@ -11,7 +11,7 @@ Cancellation >> applyCancellation: aCancellation onPlayer: aString using: aGame 
 
 { #category : #redoing }
 Cancellation >> applyRedo: redo onCard: card onPlayer: player using: game [ 
-	game applyCancellationWithRedo: self onCard:card of:player.
+	game applyCancellationWithRedo: self onCard:card of:player using:redo.
 ]
 
 { #category : #'applying card' }

@@ -8,10 +8,10 @@ Class {
 }
 
 { #category : #'instance creation' }
-HandsTable class >> generateRandomWith: players and: cards [
+HandsTable class >> generateRandomWith: players and: cardDeck [
 	| hands |
 	hands := OrderedCollection new.
-	players do: [ :player | hands add: (Hand with: player andRandom: cards) ].
+	players do: [ :player | hands add: (Hand with: player andRandom: cardDeck) ].
 	^ self new initializeWith: hands
 ]
 
@@ -68,20 +68,19 @@ HandsTable >> count: aClass [
 	^ counter
 ]
 
-{ #category : #accessing }
-HandsTable >> giveCardTo: player with: cards [
-	hands
-		detect: [ :hand | hand areYouFrom: player ]
-		ifFound: [ :hand | hand give: (Hand randomCardFrom: cards) ]
-		ifNone: [ Error signal: 'Player does not exist' ]
-]
-
-{ #category : #accessing }
-HandsTable >> giveRandomCardTo: player with: cards [
-	hands
-		detect: [ :hand | hand areYouFrom: player ]
-		ifFound: [ :hand | hand give: (Hand randomCardFrom: cards) ]
-		ifNone: [ Error signal:'Player does not exist' ]
+{ #category : #adding }
+HandsTable >> giveCardTo: player with: cardDeck and: discardDeck [
+	| card |
+	cardDeck isEmpty
+		ifTrue: [ discardDeck isEmpty
+				ifFalse: [ cardDeck shuffleUsing: discardDeck ] ]
+		ifFalse: [ card := Hand randomCardFrom: cardDeck cards.
+			hands
+				detect: [ :hand | hand areYouFrom: player ]
+				ifFound: [ :hand | 
+					hand give: card.
+					cardDeck remove: card ]
+				ifNone: [ Error signal: 'Player does not exist' ] ]
 ]
 
 { #category : #assertion }

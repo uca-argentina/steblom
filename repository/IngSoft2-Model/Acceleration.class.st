@@ -11,7 +11,7 @@ Acceleration >> applyCancellation: cancellation using: game [
 
 { #category : #redoing }
 Acceleration >> applyRedo: redo onCard: card onPlayer: player using: game [ 
-	game applyAccelerationWithRedo: self.
+	game applyAccelerationWithRedo: self using:redo.
 ]
 
 { #category : #'applying card' }

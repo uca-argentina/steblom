@@ -11,7 +11,7 @@ Speed >> applyCancellation: cancellation onPlayer: player using: game [
 
 { #category : #redoing }
 Speed >> applyRedo: redo onCard: card onPlayer: player using: game [
-	game applyPermanentWithRedo: self onPlayer: player
+	game applyPermanentWithRedo: self onPlayer: player using:redo
 ]
 
 { #category : #'applying card' }

@@ -12,7 +12,9 @@ Class {
 		'positionsTable',
 		'lastEffect',
 		'lastPlayer',
-		'lastCard'
+		'lastCard',
+		'cardDeck',
+		'discardDeck'
 	],
 	#category : #'IngSoft2-Model'
 }
@@ -40,13 +42,17 @@ Game class >> playedBy: players rolling: aDie playing: cards until: endPosition 
 		until: endPosition
 		and: finalLap
 		on: aBoard
-		storedOn: (HandsTable with: players and: (CircularIterator cyclingOver: cards))
+		storedOn: (HandsTable with: players and: (CircularIterator cyclingOver:cards))
+		with: (Deck using:cards)
+		throwingIn:(Deck discardDeck)
 ]
 
 { #category : #'instance creation' }
 Game class >> playedBy: players rolling: aDie playingRandom: cards until: endPosition andLap: finalLap on: aBoard [
+	| cardDeck |
 	self assertEndPositionIsPositive: endPosition.
 	self assertFinalLapIsPositive: finalLap.
+	cardDeck:=(Deck using:cards).
 	^ self new
 		initializePlayedBy: players
 		rolling: aDie
@@ -54,12 +60,17 @@ Game class >> playedBy: players rolling: aDie playingRandom: cards until: endPos
 		until: endPosition
 		and: finalLap
 		on: aBoard
-		storedOn: (HandsTable generateRandomWith: players and: cards)
+		storedOn: (HandsTable generateRandomWith: players and: cardDeck)
+		with: cardDeck
+		throwingIn:(Deck discardDeck)
 ]
 
-{ #category : #'applying card' }
-Game >> applyAccelerationWithRedo: acceleration [ 
-	handsTable applyOnAll: acceleration.
+{ #category : #redoing }
+Game >> applyAccelerationWithRedo: acceleration using: redo [
+	handsTable assert: acceleration isAppliedTo: players current.
+	handsTable remove: redo from: players current.
+	discardDeck add: redo.
+	handsTable applyOnAll: acceleration
 ]
 
 { #category : #'applying effect' }
@@ -69,11 +80,12 @@ Game >> applyAtomicBomb [
 ]
 
 { #category : #'applying card' }
-Game >> applyCancellation: cancellation onCard: acceleration [ 
+Game >> applyCancellation: cancellation onCard: acceleration [
 	handsTable assert: players current has: cancellation.
 	handsTable assert: acceleration isAppliedTo: players current.
 	acceleration removeYourselfOfUsing: self.
 	handsTable remove: cancellation from: players current.
+	discardDeck add: cancellation.
 	lastCard := cancellation
 ]
 
@@ -83,6 +95,7 @@ Game >> applyCancellation: cancellation onCard: card of: player [
 	handsTable assert: card isAppliedTo: player.
 	card removeYourselfOf: player using: self.
 	handsTable remove: cancellation from: players current.
+	discardDeck add: cancellation.
 	lastCard := cancellation
 ]
 
@@ -92,9 +105,17 @@ Game >> applyCancellationWithRedo: cancellation onCard: card of: player [
 	card removeYourselfOf: player using: self
 ]
 
+{ #category : #redoing }
+Game >> applyCancellationWithRedo: cancellation onCard: card of: player using: redo [ 
+	handsTable assert: card isAppliedTo: player.
+	handsTable remove:redo from:players current.
+	discardDeck add:redo.
+	card removeYourselfOf: player using: self
+]
+
 { #category : #'applying effect' }
 Game >> applyCroupierTo: player [
-	handsTable giveCardTo: player with: cards
+	handsTable giveCardTo: player with: cardDeck and:discardDeck
 ]
 
 { #category : #'applying effect' }
@@ -109,6 +130,7 @@ Game >> applyOnAll: acceleration [
 	handsTable assert: players current has: acceleration.
 	handsTable applyOnAll: acceleration.
 	handsTable remove: acceleration from: players current.
+	discardDeck add: acceleration.
 	lastCard := acceleration
 ]
 
@@ -117,33 +139,36 @@ Game >> applyPermanent: card on: player [
 	handsTable assert: players current has: card.
 	handsTable applyPermanent: card on: player.
 	handsTable remove: card from: players current.
+	discardDeck add: card.
 	lastCard := card
 ]
 
-{ #category : #'applying card' }
-Game >> applyPermanentWithRedo: card onPlayer: player [ 
+{ #category : #redoing }
+Game >> applyPermanentWithRedo: card onPlayer: player using: redo [
+	handsTable assert: card isAppliedTo: player.
 	handsTable applyPermanent: card on: player.
-]
-
-{ #category : #'applying effect' }
-Game >> applyRandomCroupierTo: player [
-	handsTable giveRandomCardTo: player with: cards
+	handsTable remove: redo from: players current.
+	discardDeck add: redo
 ]
 
 { #category : #'applying card' }
-Game >> applyRepeat: repeat [ 
+Game >> applyRepeat: repeat [
 	| game |
 	handsTable assert: players current has: repeat.
 	game := self.
-	lastEffect ifNotNil:[lastEffect applyTo: lastPlayer using: game].
-	lastCard := repeat.
+	lastEffect ifNotNil: [ lastEffect applyTo: lastPlayer using: game ].
+	handsTable remove: repeat from: players current.
+	discardDeck add: repeat.
+	lastCard := repeat
 ]
 
-{ #category : #'applying card' }
-Game >> applyRepeatWithRedo: repeat [
+{ #category : #redoing }
+Game >> applyRepeatWithRedo: repeat using: redo [
 	| game |
 	game := self.
-	lastEffect ifNotNil: [ lastEffect applyTo: lastPlayer using: game ]
+	lastEffect ifNotNil: [ lastEffect applyTo: lastPlayer using: game ].
+	handsTable remove: redo from: players current.
+	discardDeck add: redo
 ]
 
 { #category : #'applying effect' }
@@ -158,6 +183,11 @@ Game >> applyWormHoleTo: player [
 	lastEffect := WormHole new.
 	lastPlayer := player.
 	positionsTable move:player backward:4 with:endPosition
+]
+
+{ #category : #getter }
+Game >> cardDeck [
+	^ cardDeck
 ]
 
 { #category : #accessing }
@@ -178,10 +208,12 @@ Game >> hasEnded [
 ]
 
 { #category : #initialization }
-Game >> initializePlayedBy: aSetOfPlayers rolling: aDie playing: aSetOfCards until: anEndPosition and: afinalLap on: aBoard storedOn: aHandsTable [
+Game >> initializePlayedBy: aSetOfPlayers rolling: aDie playing: aSetOfCards until: anEndPosition and: afinalLap on: aBoard storedOn: aHandsTable with: aCardDeck throwingIn: aDiscardDeck [
 	players := CircularIterator cyclingOver: aSetOfPlayers.
 	die := aDie.
 	cards := aSetOfCards.
+	cardDeck := aCardDeck.
+	discardDeck := aDiscardDeck.
 	handsTable := aHandsTable.
 	endPosition := anEndPosition.
 	finalLap := afinalLap.

@@ -13,6 +13,8 @@ Class {
 Hand class >> randomCardFrom: cards [
 	| length random |
 	length := cards count: [ :i | true ].
+	length > 0
+		ifFalse: [ ^ nil ].
 	random := Random new.
 	^ cards at: (random nextInt: length)
 ]
@@ -28,11 +30,13 @@ Hand class >> with: player and: cards [
 ]
 
 { #category : #'instance creation' }
-Hand class >> with: player andRandom: cards [
-	| ownedCards |
+Hand class >> with: player andRandom: cardDeck [
+	| ownedCards card |
 	ownedCards := OrderedCollection new.
 	1 to: 2 do: [ :i | 
-		ownedCards add: (self randomCardFrom:cards) ].
+		card:=(self randomCardFrom:(cardDeck cards)).
+		ownedCards add: card .
+		cardDeck remove:card].
 	^ self new initializeFor: player with: ownedCards
 ]
 

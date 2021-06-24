@@ -187,6 +187,32 @@ GameTest >> testCroupier [
 ]
 
 { #category : #tests }
+GameTest >> testDeckHasCards [
+	| players cards proportions die endPosition effects board game |
+	players := {'Jorge' . 'Pedro'}.
+	cards := {Overload new.
+	Speed new.
+	Acceleration new.
+	Cancellation new.
+	Repeat new}.
+	proportions := {38 . 20 . 20 . 10 . 12}.
+	die := Die of: 6 rolling: #(5 5 6).
+	players := #('Pedro' 'Juan' 'Jorge').
+	endPosition := 10.
+	effects := {NoEffect new}.
+	board := Board generateWith: effects sized: endPosition.
+	game := Game
+		playedBy: players
+		rolling: die
+		playingRandom: cards
+		until: endPosition
+		andLap: 2
+		on: board.
+	self assert: ((game cardDeck) actualSize)>0
+
+]
+
+{ #category : #tests }
 GameTest >> testEndPositionCantBeNegative [
 	| players die endPosition effects board overload cards |
 	die := Die of: 6 rolling: #(4 4 6).
@@ -429,6 +455,49 @@ GameTest >> testPlayersPositions [
 ]
 
 { #category : #tests }
+GameTest >> testProportionsOfCardsInDeckAreCorrect [
+	| handsTable players cards overloadCounter speedCounter cancellationCounter accelerationCounter repeatCounter proportions |
+	overloadCounter := 0.
+	speedCounter := 0.
+	accelerationCounter := 0.
+	cancellationCounter := 0.
+	repeatCounter := 0.
+	players := {'Jorge' . 'Pedro'}.
+	cards := {Overload new.
+	Speed new.
+	Acceleration new.
+	Cancellation new.
+	Repeat new}.
+	proportions := {38 . 20 . 20 . 10 . 12}.
+	25000
+		timesRepeat: [ handsTable := HandsTable
+				generateRandomWith: players
+				and: (Deck with: cards and: proportions sized: 5).
+			overloadCounter := overloadCounter + (handsTable count: Overload).
+			speedCounter := speedCounter + (handsTable count: Speed).
+			accelerationCounter := accelerationCounter
+				+ (handsTable count: Acceleration).
+			cancellationCounter := cancellationCounter
+				+ (handsTable count: Cancellation).
+			repeatCounter := repeatCounter + (handsTable count: Repeat) ].
+	self
+		assert: (overloadCounter / 100000 * 100) rounded
+		equals: 38.
+	self
+		assert: (speedCounter / 100000 * 100) rounded
+		equals: 20.
+	self
+		assert: (accelerationCounter / 100000 * 100) rounded
+		equals: 20.
+	self
+		assert: (cancellationCounter / 100000 * 100) rounded
+		equals: 10.
+		self
+		assert: (repeatCounter / 100000 * 100) rounded
+		equals: 12.
+]
+
+{ #category : #tests }
 GameTest >> testProportionsOfEffectsAreCorrect [
 	| endPosition board effects proportions noEffectsCounter speedUpCounter wormHoleCounter moonWalkCounter atomicBombCounter croupierCounter |
 	endPosition := 20.
@@ -463,7 +532,7 @@ GameTest >> testProportionsOfEffectsAreCorrect [
 
 { #category : #tests }
 GameTest >> testRandomCardsDelivery [
-	| handsTable players cards overloadCounter speedCounter cancellationCounter accelerationCounter repeatCounter |
+	| handsTable players cards overloadCounter speedCounter cancellationCounter accelerationCounter repeatCounter proportions |
 	overloadCounter := 0.
 	speedCounter := 0.
 	accelerationCounter := 0.
@@ -475,10 +544,11 @@ GameTest >> testRandomCardsDelivery [
 	Acceleration new.
 	Cancellation new.
 	Repeat new}.
+	proportions := {20 . 20 . 20 . 20 . 20 }.
 	25000
 		timesRepeat: [ handsTable := HandsTable
 				generateRandomWith: players
-				and: cards.
+				and: (Deck with:cards and:proportions sized:5).
 			overloadCounter := overloadCounter + (handsTable count: Overload).
 			speedCounter := speedCounter + (handsTable count: Speed).
 			accelerationCounter := accelerationCounter
@@ -518,7 +588,6 @@ GameTest >> testRandomCroupier [
 	cards := {overload.
 	speed.
 	Acceleration new.
-	Cancellation new.
 	Repeat new}.
 	game := Game
 		playedBy: players
@@ -528,7 +597,7 @@ GameTest >> testRandomCroupier [
 		andLap: 2
 		on: board.
 	game removeCardsFrom: 'Jorge'.
-	100000 timesRepeat: [ game applyRandomCroupierTo: 'Jorge' ].
+	100000 timesRepeat: [ game applyCroupierTo: 'Jorge'. game playACard].
 	overloadCounter := game count: Overload.
 	speedCounter := game count: Speed.
 	accelerationCounter := game count: Acceleration.
@@ -540,9 +609,6 @@ GameTest >> testRandomCroupier [
 	self
 		assert: (overloadCounter / 100000 * 100) rounded
 		equals: (accelerationCounter / 100000 * 100) rounded.
-	self
-		assert: (overloadCounter / 100000 * 100) rounded
-		equals: (cancellationCounter / 100000 * 100) rounded.
 	self
 		assert: (overloadCounter / 100000 * 100) rounded
 		equals: (repeatCounter / 100000 * 100) rounded
@@ -599,8 +665,8 @@ GameTest >> testRedoOnCancellation [
 	self assert: (game positionOf: 'Pedro') equals: 7.
 	game applyPermanent: speed on: 'Juan'.
 	cancellation applyUsing: game onCard: speed onPlayer:'Pedro'.
-	redo applyUsing: game onCard: speed onPlayer:'Juan'.
 	game playATurn.
+	redo applyUsing: game onCard: speed onPlayer:'Juan'.
 	game playATurn.
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 12

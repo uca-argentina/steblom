@@ -11,7 +11,7 @@ Repeat >> applyCancellation: card onPlayer: player using: game [
 
 { #category : #redoing }
 Repeat >> applyRedo: redo onCard: card onPlayer: player using: game [ 
-	game applyRepeatWithRedo: self.
+	game applyRepeatWithRedo: self using:redo.
 ]
 
 { #category : #'applying card' }
