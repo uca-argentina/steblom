@@ -203,7 +203,7 @@ GameTest >> testDouble [
 		until: endPosition
 		andLap: 2
 		on: board.
-	double applyUsing: game on: nil.
+	double applyUsing: game on: 'Pedro'.
 	game playATurn.
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 1.
@@ -748,7 +748,7 @@ GameTest >> testReverse [
 		on: board.
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 6.
-	reverse applyUsing: game on: nil.
+	reverse applyUsing: game on: 'Pedro'.
 	game playATurn.
 	self assert: (game positionOf: 'Juan') equals: 6.
 	game playATurn.
@@ -775,7 +775,6 @@ GameTest >> testSkip [
 		andLap: 2
 		on: board.
 	skip applyUsing: game on: 'Juan'.
-	game playATurn.
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 1.
 	self assert: (game positionOf: 'Juan') equals: 6.

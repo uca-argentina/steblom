@@ -6,5 +6,5 @@ Class {
 
 { #category : #'applying effect' }
 Double >> applyUsing: game on: player [
-	game applyDouble:self
+	game applyDouble:self of: player
 ]

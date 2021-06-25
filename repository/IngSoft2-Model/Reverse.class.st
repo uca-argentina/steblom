@@ -6,5 +6,5 @@ Class {
 
 { #category : #'applying card' }
 Reverse >> applyUsing: game on: player [
-	game applyReverse: self
+	game applyReverse: self of: player
 ]

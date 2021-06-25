@@ -98,9 +98,9 @@ Game >> applyCroupierTo: player [
 ]
 
 { #category : #'applying card' }
-Game >> applyDouble: double [ 
-	handsTable assert: players current has: double.
-	handsTable remove: double from: players current.
+Game >> applyDouble: double of: player [ 
+	handsTable assert: player has: double.
+	handsTable remove: double from: player.
 	self playATurn.
 	((players getOptions) size-1)timesRepeat: [ players next ]
 ]
@@ -155,10 +155,10 @@ Game >> applyRepeatWithRedo: repeat [
 ]
 
 { #category : #'applying card' }
-Game >> applyReverse: reverse [ 
+Game >> applyReverse: reverse of: player [
 	| aux aux2 cont auxPlayer a |
-	handsTable assert: players current has: reverse.
-	handsTable remove: reverse from: players current.
+	handsTable assert: player has: reverse.
+	handsTable remove: reverse from: player.
 	auxPlayer := players current.
 	aux := players getOptions.
 	aux2 := OrderedCollection new.
