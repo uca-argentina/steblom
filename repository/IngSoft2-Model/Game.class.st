@@ -165,7 +165,7 @@ Game >> applyReverse: reverse of: player [
 	cont := aux size.
 	[ cont > 0 ] whileTrue: [ aux2 add: (aux at:cont). ((aux at:cont)=auxPlayer) ifTrue: [ a := cont ]. cont:=cont-1 ].
 	players := CircularIterator cyclingOver: aux2.
-	(a-1) timesRepeat: [ players next ]
+	(aux size - a) timesRepeat: [ players next ]
 ]
 
 { #category : #'applying card' }

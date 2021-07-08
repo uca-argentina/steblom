@@ -733,7 +733,7 @@ GameTest >> testRepeat [
 GameTest >> testReverse [
 	| game players die board endPosition effects cards reverse |
 	die := Die of: 6 rolling: #(5 5 6).
-	players := #('Pedro' 'Juan' 'Jorge').
+	players := #('Pedro' 'Tomi' 'Juan' 'Joaco').
 	endPosition := 10.
 	effects := {NoEffect new}.
 	board := Board generateWith: effects sized: endPosition.
@@ -748,13 +748,15 @@ GameTest >> testReverse [
 		on: board.
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 6.
-	reverse applyUsing: game on: 'Pedro'.
+	reverse applyUsing: game on: 'Juan'.
 	game playATurn.
-	self assert: (game positionOf: 'Juan') equals: 6.
+	self assert: (game positionOf: 'Tomi') equals: 6.
 	game playATurn.
 	self assert: (game positionOf: 'Pedro') equals: 2.
 	game playATurn.
-	self assert: (game positionOf: 'Jorge') equals: 6.
+	self assert: (game positionOf: 'Joaco') equals: 6.
+	game playATurn.
+	self assert: (game positionOf: 'Juan') equals: 6.
 ]
 
 { #category : #tests }
